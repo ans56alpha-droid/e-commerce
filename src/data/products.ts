@@ -3,52 +3,49 @@ import type { Product } from "@/types/product";
 export const products: Product[] = [
   {
     id: "1",
-    name: "Product 1",
-    slug: "product-1",
-    price: 9.99,
-    image: "/images/product-1.jpg",
-    category: "Electronics",
+    name: "Sony WH-1000XM5",
+    slug: "sony-wh1000xm5",
+    description: "Premium wireless headphones.",
+
+    price: 349,
+
+    compareAtPrice: 399,
+
+    image: "/products/headphones.jpg",
+
+    rating: 4.8,
+
+    reviewCount: 520,
+
+    category: "electronics",
+
     featured: true,
-    rating: 4.5,
+
+    isNew: true,
+
+    inStock: true,
   },
+
   {
     id: "2",
-    name: "Product 2",
-    slug: "product-2",
-    price: 19.99,
-    image: "/images/product-2.jpg",
-    category: "Electronics",
-    featured: false,
-    rating: 4,
+    name: "Apple Watch Ultra",
+    slug: "apple-watch-ultra",
+    description: "Smart watch.",
+
+    price: 799,
+
+    image: "/products/watch.jpg",
+
+    rating: 4.9,
+
+    reviewCount: 312,
+
+    category: "electronics",
+
+    featured: true,
+
+    isNew: false,
+
+    inStock: true,
   },
-  {
-    id: "3",
-    name: "Product 3",
-    slug: "product-3",
-    price: 24.99,
-    image: "/images/product-3.jpg",
-    category: "Electronics",
-    featured: false,
-    rating: 3.5,
-  },
-  {
-    id: "4",
-    name: "Product 4",
-    slug: "product-4",
-    price: 34.99,
-    image: "/images/product-4.jpg",
-    category: "Electronics",
-    featured: false,
-    rating: 4.5,
-  },
-  {
-    id: "5",
-    name: "Product 5",
-    slug: "product-5",
-    price: 39.99,
-    image: "/images/product-5.jpg",
-    category: "Electronics",
-    featured: false,
-    rating: 4.5,
-  }
-]
+];
