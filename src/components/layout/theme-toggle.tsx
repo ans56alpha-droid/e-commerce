@@ -12,6 +12,7 @@ export default function ThemeToggle() {
       type="button"
       className="rounded-full p-2 transition hover:bg-muted"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      suppressHydrationWarning
     >
       {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
     </button>

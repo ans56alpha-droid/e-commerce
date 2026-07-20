@@ -13,20 +13,30 @@ export default function Navbar() {
         <NavLinks />
         <div className="flex items-center gap-4">
           <ThemeToggle />
-          <button aria-label="wishlist" className="transition hover:scale-110">
+          <Button
+            aria-label="wishlist"
+            variant="ghost"
+            size="md"
+            className="transition hover:scale-110"
+          >
             <Heart size={22} />
-          </button>
+          </Button>
           <Button
             aria-label="shopping cart"
-            variant="primary"
-            size="lg"
+            variant="ghost"
+            size="md"
             className="transition hover:scale-110"
           >
             <ShoppingCart size={22} />
           </Button>
-          <button aria-label="User menu" className="transition hover:scale-110">
+          <Button
+            aria-label="User menu"
+            variant="ghost"
+            size="md"
+            className="transition hover:scale-110"
+          >
             <User size={22} />
-          </button>
+          </Button>
         </div>
       </Container>
     </header>
