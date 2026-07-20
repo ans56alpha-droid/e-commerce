@@ -3,6 +3,7 @@ import NavLinks from "./nav-links";
 import { Heart, ShoppingCart, User } from "lucide-react";
 import ThemeToggle from "./theme-toggle";
 import Container from "../ui/container";
+import Button from "../ui/button";
 
 export default function Navbar() {
   return (
@@ -15,9 +16,14 @@ export default function Navbar() {
           <button aria-label="wishlist" className="transition hover:scale-110">
             <Heart size={22} />
           </button>
-          <button aria-label="shopping cart" className="transition hover:scale-110">
+          <Button
+            aria-label="shopping cart"
+            variant="primary"
+            size="lg"
+            className="transition hover:scale-110"
+          >
             <ShoppingCart size={22} />
-          </button>
+          </Button>
           <button aria-label="User menu" className="transition hover:scale-110">
             <User size={22} />
           </button>
