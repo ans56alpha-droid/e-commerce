@@ -52,9 +52,11 @@ const CategorySchema = new Schema(
 
 export type CategoryType = InferSchemaType<typeof CategorySchema>;
 
-export const Category =
+const Category =
   (models.Category as Model<CategoryType>) ||
   model<CategoryType>(
     "Category",
     CategorySchema
   );
+
+export default Category;

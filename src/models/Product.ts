@@ -1,19 +1,97 @@
-import { Schema, model, models } from "mongoose";
-import { uppercase } from "zod";
+import { Schema, model, models, Model, InferSchemaType, HydratedDocument } from "mongoose";
+import { PRODUCT_STATUS } from "../constants/product";
+import { slugify } from "@/utils/slugify";
 
-const ProductSchema = new Schema(
+const ImageSchema = new Schema(
   {
-    name: {
+    url: {
       type: String,
       required: true,
       trim: true,
     },
 
+    alt: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    isPrimary: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const SpecificationSchema = new Schema(
+  {
+    key: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    value: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const DimensionSchema = new Schema(
+  {
+    weight: Number,
+
+    height: Number,
+
+    width: Number,
+
+    length: Number,
+  },
+  {
+    _id: false,
+  }
+);
+
+const SeoSchema = new Schema(
+  {
+    title: {
+      type: String,
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      trim: true,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const ProductSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Name is required"],
+      trim: true,
+      max: 200,
+    },
+
     slug: {
         type: String,
-        required: true,
         unique: true,
         index: true,
+        lowercase: true,
+        trim: true,
     },
 
     shortDescription: {
@@ -21,13 +99,14 @@ const ProductSchema = new Schema(
       required: true,
       trim: true,
       maxlength: 200,
+      default: "",
     },
 
     description: {
       type: String,
-      required: true,
       trim: true,
       maxlength: 500,
+      default: "",
     },
 
 
@@ -38,47 +117,38 @@ const ProductSchema = new Schema(
 
     compareAtPrice: {
       type: Number,
-      required: true,
     },
 
     costPrice: {
-      type: Number,
-      required: true,
-
-      validate: {
-        validator: function (v: number): boolean {
-          return v >= 0;
-        },
-        message: "{VALUE} must be greater than or equal to 0",
-      },
-    },
-
-    inventory: {
-      type: Number,
-      default: 0,
-    },
+      type: Number, 
+    }, 
 
     sku: {
       type: String,
       required: true,
       unique: true,
-      uppercase: true
+      uppercase: true,
+      trim: true,
     },
 
     lowStockThreshold: {
       type: Number,
-      default: 10,
+      default: 5,
+      min: 0,
     },
 
     stock: {
       type: Number,
+      required: true,
       default: 0,
+      min: 0,
     },
 
     category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
+      index: true,
     },
 
     brand: {
@@ -87,33 +157,28 @@ const ProductSchema = new Schema(
       trim: true,
     },
 
-    images: [
-      {
-        url: String,
-        alt: String,
-        isPrimary: Boolean,
-      },
-    ],
+    images: {
+      type: [ImageSchema],
+      default: [],
+    },
 
     status: {
       type: String,
-      enum: ["draft", "published", "archived"],
-      default: "draft",
-      required: true,
+      enum:  Object.values(PRODUCT_STATUS),
+      default: PRODUCT_STATUS.DRAFT,
+      index: true,
     },
 
     isFeatured: {
       type: Boolean,
       default: false,
+      index: true,
     },
 
-    tags: [
-      {
-        type: String,
-        required: true,
-        trim: true,
-      },
-    ],
+    tags: {
+      type: [String],
+      default: [],
+    },
 
     averageRating: {
       type: Number,
@@ -132,14 +197,8 @@ const ProductSchema = new Schema(
       default: 0,
     },
 
-    seoTitle: {
-      type: String,
-      trim: true,
-    },
-
-    seoDescription: {
-      type: String,
-      trim: true,
+    seo: {
+      type: SeoSchema,
     },
 
     isDeleted: {
@@ -147,7 +206,14 @@ const ProductSchema = new Schema(
       default: false,
     },
 
-    
+    specifications: {
+      type: [SpecificationSchema],
+      default: [],
+    },
+
+    dimensions: {
+      type: DimensionSchema,
+    },
 
   },
 
@@ -156,5 +222,19 @@ const ProductSchema = new Schema(
   }
 );
 
-export const Product =
-  models.Product || model("Product", ProductSchema);
+ProductSchema.pre("validate", async function (this: HydratedDocument<ProductType>) {
+  if(this.isModified("name")) {
+    this.slug = slugify(this.name);
+  }
+});
+
+export type ProductType = InferSchemaType<typeof ProductSchema>;
+
+const Product =
+    (models.Product as Model<ProductType>) ||
+    model<ProductType>(
+      "Product",
+      ProductSchema
+    );
+
+export default Product;

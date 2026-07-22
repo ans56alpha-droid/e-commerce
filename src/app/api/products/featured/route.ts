@@ -1,21 +1,21 @@
-import { connectDB } from "@/db";
 import { NextResponse } from "next/server";
+import { getFeaturedProducts } from "@/services/product.service";
 
 export async function GET() {
   try {
-    await connectDB();
+    const products = await getFeaturedProducts();
+    console.log("products", products);
 
     return NextResponse.json({
       success: true,
-      message: "Database connected successfully!",
+      data: products,
     });
   } catch (error) {
     console.error(error);
 
     return NextResponse.json(
       {
-        success: false,
-        message: "Database connection failed.",
+        message: "Failed to fetch featured products.",
       },
       {
         status: 500,
