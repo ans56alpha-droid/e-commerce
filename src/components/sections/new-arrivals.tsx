@@ -1,10 +1,10 @@
 import Container from "@/components/ui/container";
 import ProductCard from "@/components/shared/product-card";
 
-import { products } from "@/data/products";
+import type { Product } from "@/types/product";
 
-export default function NewArrivals() {
-  const newProducts = products.filter((product) => product.isNew);
+export default function NewArrivals({ products }: { products: Product[] }) {
+  const newProducts = products;
 
   return (
     <section className="py-16">

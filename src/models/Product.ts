@@ -238,3 +238,11 @@ const Product =
     );
 
 export default Product;
+
+export type ProductImage = InferSchemaType<typeof ImageSchema>;
+
+export type ProductSpecification = InferSchemaType<typeof SpecificationSchema>;
+
+export type ProductDimension = InferSchemaType<typeof DimensionSchema>;
+
+export type ProductSeo = InferSchemaType<typeof SeoSchema>;

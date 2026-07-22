@@ -5,15 +5,22 @@ import Hero from "@/components/sections/hero";
 import NewArrivals from "@/components/sections/new-arrivals";
 import Newsletter from "@/components/sections/newsletter";
 import PromoBanner from "@/components/sections/promo-banner";
+import { getFeaturedProducts, getNewArrivals } from "@/services/product";
+import { getFeaturedCategories } from "@/services/category";
 
-export default function Home() {
+export default async function Home() {
+  const featuredProducts = await getFeaturedProducts();
+  const newArrivalProducts = await getNewArrivals();
+
+  const categories = await getFeaturedCategories();
+
   return (
     <>
       <Hero />
-      <FeaturedCategories />
-      <FeaturedProducts />
+      <FeaturedCategories categories={categories} />
+      <FeaturedProducts products={featuredProducts} />
       <PromoBanner />
-      <NewArrivals />
+      <NewArrivals products={newArrivalProducts} />
       <Features />
       <Newsletter />
     </>

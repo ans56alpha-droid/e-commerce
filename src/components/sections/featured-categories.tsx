@@ -1,9 +1,9 @@
 import Container from "@/components/ui/container";
 import CategoryCard from "@/components/shared/category-card";
 
-import { categories } from "@/data/categories";
+import type { Category } from "@/types/category";
 
-export default function FeaturedCategories() {
+export default function FeaturedCategories({ categories }: { categories: Category[] }) {
   return (
     <section className="py-16">
       <Container>

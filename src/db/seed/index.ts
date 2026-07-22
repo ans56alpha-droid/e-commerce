@@ -3,52 +3,68 @@ import { connectDB } from "@/db";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
 
-import { categorySeed } from "./categories";
+import { categorySeed } from "./categories"; 
 import { createProductSeed } from "./products";
 
+import { createProduct } from "@/services/product";
+
 async function seed() {
-  await connectDB();
+  try {
+    await connectDB();
 
-  console.log("Connected.");
+    console.log("Connected to database.");
 
-  // Delete old data
-  await Product.deleteMany({});
-  await Category.deleteMany({});
+    // Clear collections
+    await Product.deleteMany({});
+    await Category.deleteMany({});
 
-  console.log("Old data removed.");
+    console.log("Old data removed.");
 
-  // Insert categories
-  const insertedCategories = await Category.insertMany(categorySeed);
+    // Insert categories
+    const insertedCategories = await Category.insertMany(categorySeed);
 
-  console.log("Categories inserted.");
+    console.log(insertedCategories.length)
+    console.log("Categories", insertedCategories.map((c) => c.name));
 
-  // Create category lookup
-  const categoryMap = {
-    men: insertedCategories.find((c) => c.slug === "men")!._id,
+    console.log("Categories inserted.");
 
-    women: insertedCategories.find((c) => c.slug === "women")!._id,
+    // Build category lookup
+    const categoryMap = {
+      men: insertedCategories.find(
+        (category) => category.slug === "men"
+      )!._id,
 
-    electronics: insertedCategories.find(
-      (c) => c.slug === "electronics"
-    )!._id,
+      women: insertedCategories.find(
+        (category) => category.slug === "women"
+      )!._id,
 
-    shoes: insertedCategories.find((c) => c.slug === "shoes")!._id,
-  };
+      electronics: insertedCategories.find(
+        (category) => category.slug === "electronics"
+      )!._id,
 
-//   console.log("categoryMap", categoryMap);
+      shoes: insertedCategories.find(
+        (category) => category.slug === "shoes"
+      )!._id,
+    };
 
-  // Generate products
-  const products = createProductSeed(categoryMap);
+    // Generate products
+    const products = createProductSeed(categoryMap);
 
-  // Insert products
-  await Product.insertMany(products);
+    // console.log("Products", products);
 
-  console.log("Products inserted.");
+    // Save products (runs middleware)
+    for (const productData of products) {
+       await createProduct(productData);
+    }
 
-  process.exit(0);
+    console.log("Products inserted.");
+
+    process.exit(0);
+  } catch (error) {
+    console.error(error);
+
+    process.exit(1);
+  }
 }
 
-seed().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+seed();

@@ -5,6 +5,7 @@ export const categorySeed = [
       description: "Men's fashion and accessories",
       isFeatured: true,
       sortOrder: 1,
+      image: "/categories/men-category.jpg"
     },
     {
       name: "Women",
@@ -12,6 +13,8 @@ export const categorySeed = [
       description: "Women's fashion and accessories",
       isFeatured: true,
       sortOrder: 2,
+      image: "/categories/women-category.jpg"
+
     },
     {
       name: "Electronics",
@@ -19,6 +22,8 @@ export const categorySeed = [
       description: "Phones, laptops and accessories",
       isFeatured: true,
       sortOrder: 3,
+      image: "/categories/electronics-category.jpg"
+
     },
     {
       name: "Shoes",
@@ -26,5 +31,7 @@ export const categorySeed = [
       description: "Running, casual and formal shoes",
       isFeatured: true,
       sortOrder: 4,
+      image: "/categories/shoes-category.jpg"
+
     },
   ];

@@ -1,9 +1,9 @@
 import Container from "@/components/ui/container";
 import ProductCard from "@/components/shared/product-card";
 
-import { products } from "@/data/products";
+import type { Product } from "@/types/product";
 
-export default function FeaturedProducts() {
+export default function FeaturedProducts({ products }: { products: Product[] }) {
   const featuredProducts = products.filter((product) => product.featured);
 
   return (
