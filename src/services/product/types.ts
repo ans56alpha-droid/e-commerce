@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { ProductImage, ProductSpecification, ProductDimension, ProductSeo } from "@/models/Product";
 import { PRODUCT_STATUS } from "@/constants/product";
+import { Product } from "@/types/product";
 
 export interface CreateProductInput {
   name: string;
@@ -38,4 +39,43 @@ export interface CreateProductInput {
   status?: (typeof PRODUCT_STATUS)[keyof typeof PRODUCT_STATUS];
 
   isFeatured?: boolean;
+}
+
+export interface ProductFilters {
+  search?: string;
+
+  category?: string;
+
+  brand?: string;
+
+  minPrice?: number;
+
+  maxPrice?: number;
+
+  featured?: boolean;
+
+  status?: (typeof PRODUCT_STATUS)[keyof typeof PRODUCT_STATUS];
+
+  sortBy?:
+    | "newest"
+    | "oldest"
+    | "price-asc"
+    | "price-desc"
+    | "rating";
+
+  page?: number;
+
+  limit?: number;
+}
+
+export interface PaginatedProducts {
+  products:  Product[];
+
+  total: number;
+
+  page: number;
+
+  totalPages: number;
+
+  limit: number;
 }
