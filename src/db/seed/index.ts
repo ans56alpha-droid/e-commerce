@@ -35,6 +35,8 @@ async function seed() {
     shoes: insertedCategories.find((c) => c.slug === "shoes")!._id,
   };
 
+//   console.log("categoryMap", categoryMap);
+
   // Generate products
   const products = createProductSeed(categoryMap);
 

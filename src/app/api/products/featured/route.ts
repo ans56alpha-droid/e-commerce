@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { getFeaturedProducts } from "@/services/product.service";
+import { NextResponse } from "next/server"; 
+import { getFeaturedProducts } from "@/services/product";
 
 export async function GET() {
   try {
