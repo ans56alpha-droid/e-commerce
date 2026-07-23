@@ -4,7 +4,7 @@ import Product from "@/models/Product";
 import { PRODUCT_STATUS } from "@/constants/product";
 
 import "@/models/Category"
-import { toProductCard } from "@/mappers/product";
+import { toProductCard, toProductDetails } from "@/mappers/product";
 import { ProductFilters } from "./types";
 
 export async function getFeaturedProducts(limit = 8) {
@@ -138,4 +138,16 @@ export async function getProducts({
     limit,
     totalPages: Math.ceil(total / limit),
   }
+}
+
+export async function getProductBySlug(slug: string) {
+  await connectDB();
+
+  const product = await Product.findOne({
+     slug,
+     isDeleted: false,
+     status: PRODUCT_STATUS.PUBLISHED,
+    }).populate("category");
+
+  return product ? toProductDetails(product) : null;
 }
