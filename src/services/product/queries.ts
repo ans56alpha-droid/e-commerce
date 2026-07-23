@@ -72,7 +72,10 @@ export async function getProducts({
   }
 
   if (brand) {
-    query.brand = brand;
+    query.brand = {
+      $regex: brand,
+      $options: "i",
+    };
   }
 
   if ( minPrice !== undefined || maxPrice !== undefined) {
@@ -120,10 +123,19 @@ export async function getProducts({
 
   const skip = (page - 1) * limit;
 
-  const products = await Product.find(query)
+  const [products, total] = await Promise.all([
+    Product.find(query)
     .sort(sort)
     .skip(skip)
-    .limit(limit);
+    .limit(limit),
+    Product.countDocuments(query)
+  ]);
 
-  return products.map(toProductCard);
+  return {
+    products: products.map(toProductCard),
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  }
 }
