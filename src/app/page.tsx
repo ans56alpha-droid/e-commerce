@@ -9,8 +9,8 @@ import { getFeaturedProducts, getNewArrivals } from "@/services/product";
 import { getFeaturedCategories } from "@/services/category";
 
 export default async function Home() {
-  const featuredProducts = await getFeaturedProducts();
-  const newArrivalProducts = await getNewArrivals();
+  const { products: featuredProducts } = await getFeaturedProducts();
+  const { products: newArrivalProducts } = await getNewArrivals();
 
   const categories = await getFeaturedCategories();
 
