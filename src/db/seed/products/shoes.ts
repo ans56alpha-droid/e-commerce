@@ -30,9 +30,25 @@ export function createShoes(categories: CategoryMap) {
       images: [
         {
           url: "/products/shoes/nike-air-max-270.jpeg",
-          alt: "Nike Air Max 270",
+          alt: "Nike Air Max 270 - Front",
           isPrimary: true,
         },
+        {
+          url: "/products/shoes/nike-air-max-270-side.jpeg",
+          alt: "Nike Air Max 270 - Side",
+          isPrimary: false,
+        },
+        {
+          url: "/products/shoes/nike-air-max-270-back.jpeg",
+          alt: "Nike Air Max 270 - Back",
+          isPrimary: false,
+        },
+        {
+          url: "/products/shoes/nike-air-max-270-front.jpeg",
+          alt: "Nike Air Max 270 - Front",
+          isPrimary: false,
+        },
+
       ],
 
       specifications: [
@@ -130,7 +146,7 @@ export function createShoes(categories: CategoryMap) {
       images: [
         {
           url: "/products/shoes/puma-rsx.jpeg",
-          alt: "Adidas Ultraboost Light",
+          alt: "Puma RS-X",
           isPrimary: true,
         },
       ],
@@ -182,7 +198,7 @@ export function createShoes(categories: CategoryMap) {
       images: [
         {
           url: "/products/shoes/new-balance-574.jpeg",
-          alt: "Adidas Ultraboost Light",
+          alt: "New Balance 574",
           isPrimary: true,
         },
       ],

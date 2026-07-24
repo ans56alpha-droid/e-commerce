@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/services/product";
 
 import Container from "@/components/ui/container";
+import { ProductGallery, ProductInfo, ProductSpecifications } from "@/components/product";
 
 interface ProductPageProps {
   params: Promise<{
@@ -21,30 +22,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <Container className="py-10">
-      <div className="grid gap-10 lg:grid-cols-2">
+      <div className="grid gap-10 lg:grid-cols-2 mb-2">
         {/* Images */}
 
-        <div>
-          <img src={product.images[0]?.url} alt={product.name} />
-        </div>
+        <ProductGallery images={product.images} />
 
         {/* Information */}
 
-        <div>
-          <h1>{product.name}</h1>
-
-          <p>{product.brand}</p>
-
-          <p>{product.shortDescription}</p>
-
-          <p>${product.price}</p>
-
-          <p>
-            Stock:
-            {product.stock}
-          </p>
-        </div>
+        <ProductInfo product={product} />
       </div>
+
+      <ProductSpecifications specifications={product.specifications} />
     </Container>
   );
 }
