@@ -151,3 +151,27 @@ export async function getProductBySlug(slug: string) {
 
   return product ? toProductDetails(product) : null;
 }
+
+export async function getRelatedProducts({
+  productId,
+  categoryId,
+  limit = 4
+}: {
+  productId: string;
+  categoryId: string;
+  limit?: number;
+}) {
+
+  await connectDB();
+
+  const products = await Product.find({
+    category: categoryId,
+    _id: {
+      $ne: productId,
+    },
+    isDeleted: false,
+    status: PRODUCT_STATUS.PUBLISHED,
+  }).sort({ createdAt: -1 }).limit(limit);
+
+  return products.map(toProductCard);
+}
