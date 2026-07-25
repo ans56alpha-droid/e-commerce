@@ -1,6 +1,6 @@
 import type { Types } from "mongoose";
 import { CategoryType } from "@/models/Category";
-import type { Category } from "@/types/category";
+import type { Category, CategoryOption } from "@/types/category";
 
 type CategoryWithCount = CategoryType & {
     _id: Types.ObjectId;
@@ -20,20 +20,12 @@ export function toCategoryCard(
     };
 }
 
-
-
-
-
-
-
-
-
-
-// export interface Category {
-//     id: string;
-//     name: string;
-//     slug: string;
-//     image: string;
-//     productCount: number;
-// }
+export function toCategoryOption(
+    category: CategoryType & { _id: Types.ObjectId }
+): CategoryOption {
+    return {
+        id: category._id.toString(),
+        name: category.name,
+    };
+}
 

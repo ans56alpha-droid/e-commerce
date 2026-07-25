@@ -5,3 +5,8 @@ export interface Category {
     image: string;
     productCount: number;
 }
+
+export interface CategoryOption {
+    id: string;
+    name: string;
+}

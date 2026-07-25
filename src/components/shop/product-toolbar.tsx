@@ -4,11 +4,17 @@ import CategoryFilter from "./category-filter";
 import BrandFilter from "./brand-filter";
 import PriceFilter from "./price-filter";
 
-export default function ProductToolbar() {
+import type { CategoryOption } from "@/types/category";
+
+interface ProductToolbarProps {
+  categories: CategoryOption[];
+}
+
+export default function ProductToolbar({ categories }: ProductToolbarProps) {
   return (
     <div className="mb-10 flex flex-wrap items-center gap-4">
       <SearchBox />
-      <CategoryFilter />
+      <CategoryFilter categories={categories} />
       <BrandFilter />
       <PriceFilter />
       <SortSelect />
