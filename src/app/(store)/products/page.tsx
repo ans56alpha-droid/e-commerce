@@ -1,6 +1,6 @@
 import Container from "@/components/ui/container";
-import ProductCard from "@/components/shared/product-card";
 import { getProducts } from "@/services/product";
+import { ProductToolbar, ProductGrid, Pagination } from "@/components/shop";
 
 export default async function ProductsPage() {
   const { products } = await getProducts();
@@ -15,11 +15,11 @@ export default async function ProductsPage() {
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <ProductToolbar />
+
+        <ProductGrid products={products} />
+
+        <Pagination />
       </Container>
     </section>
   );
