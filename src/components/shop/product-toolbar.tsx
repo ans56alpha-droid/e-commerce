@@ -8,14 +8,15 @@ import type { CategoryOption } from "@/types/category";
 
 interface ProductToolbarProps {
   categories: CategoryOption[];
+  brands: string[];
 }
 
-export default function ProductToolbar({ categories }: ProductToolbarProps) {
+export default function ProductToolbar({ categories, brands }: ProductToolbarProps) {
   return (
     <div className="mb-10 flex flex-wrap items-center gap-4">
       <SearchBox />
       <CategoryFilter categories={categories} />
-      <BrandFilter />
+      <BrandFilter brands={brands} />
       <PriceFilter />
       <SortSelect />
     </div>

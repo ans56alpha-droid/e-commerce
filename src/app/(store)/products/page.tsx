@@ -1,5 +1,5 @@
 import Container from "@/components/ui/container";
-import { getProducts } from "@/services/product";
+import { getProducts, getAvailableBrands } from "@/services/product";
 import { getActiveCategories } from "@/services/category";
 import { ProductToolbar, ProductGrid, Pagination } from "@/components/shop";
 import { parseProductFilters } from "@/lib/product-filters";
@@ -10,9 +10,10 @@ export default async function ProductsPage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const filters = parseProductFilters(await searchParams);
-  const [{ products }, categories] = await Promise.all([
+  const [{ products }, categories, brands] = await Promise.all([
     getProducts(filters),
     getActiveCategories(),
+    getAvailableBrands(),
   ]);
 
   return (
@@ -25,7 +26,7 @@ export default async function ProductsPage({
           </p>
         </div>
 
-        <ProductToolbar categories={categories} />
+        <ProductToolbar categories={categories} brands={brands} />
 
         {products.length > 0 ? (
           <ProductGrid products={products} />

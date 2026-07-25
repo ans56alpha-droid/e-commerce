@@ -61,6 +61,18 @@ export async function getProductBySlug(slug: string) {
   return product ? toProductDetails(product) : null;
 }
 
+export async function getAvailableBrands(): Promise<string[]> {
+  await connectDB();
+
+  const brands = await Product.distinct("brand", {
+    status: PRODUCT_STATUS.PUBLISHED,
+    isDeleted: false,
+    brand: { $exists: true, $ne: "" },
+  });
+
+  return (brands as string[]).sort((a, b) => a.localeCompare(b));
+}
+
 export async function getRelatedProducts({
   productId,
   categoryId,
