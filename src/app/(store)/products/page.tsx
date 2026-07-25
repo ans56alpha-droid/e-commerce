@@ -3,7 +3,7 @@ import ProductCard from "@/components/shared/product-card";
 import { getProducts } from "@/services/product";
 
 export default async function ProductsPage() {
-  const products = await getProducts();
+  const { products } = await getProducts();
 
   return (
     <section className="py-16">
