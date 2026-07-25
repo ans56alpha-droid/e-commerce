@@ -83,45 +83,49 @@ export default function PriceFilter() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2">
-      <div className="flex items-center gap-2">
-        <Input
-          type="number"
-          name="minPrice"
-          value={minValue}
-          onChange={(e) => {
-            setMinValue(e.target.value);
-            if (error) setError("");
-          }}
-          placeholder="Min"
-          min="0"
-          className="w-24"
-          aria-label="Minimum price"
-        />
-        <span className="text-muted-foreground">-</span>
-        <Input
-          type="number"
-          name="maxPrice"
-          value={maxValue}
-          onChange={(e) => {
-            setMaxValue(e.target.value);
-            if (error) setError("");
-          }}
-          placeholder="Max"
-          min="0"
-          className="w-24"
-          aria-label="Maximum price"
-        />
-      </div>
-      <Button type="submit" variant="secondary" disabled={isPending}>
-        Apply
-      </Button>
-      <Button type="button" variant="ghost" onClick={handleClear} disabled={isPending}>
-        Clear
-      </Button>
+    <div className="relative flex items-center gap-2">
+      <form onSubmit={handleSubmit} className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            name="minPrice"
+            value={minValue}
+            onChange={(e) => {
+              setMinValue(e.target.value);
+              if (error) setError("");
+            }}
+            placeholder="Min"
+            min="0"
+            className="w-24"
+            aria-label="Minimum price"
+          />
+          <span className="text-muted-foreground">-</span>
+          <Input
+            type="number"
+            name="maxPrice"
+            value={maxValue}
+            onChange={(e) => {
+              setMaxValue(e.target.value);
+              if (error) setError("");
+            }}
+            placeholder="Max"
+            min="0"
+            className="w-24"
+            aria-label="Maximum price"
+          />
+        </div>
+        <Button type="submit" variant="secondary" disabled={isPending}>
+          Apply
+        </Button>
+        <Button type="button" variant="ghost" onClick={handleClear} disabled={isPending}>
+          Clear
+        </Button>
+      </form>
       {error && (
-        <span className="text-sm text-destructive">{error}</span>
+        <span className="absolute top-full left-0 z-10 mt-1 whitespace-nowrap rounded-md bg-red-800 px-3 py-1.5 text-sm text-destructive text-red-300 shadow-md ring-1 ring-destructive/20">
+          {error}
+        </span>
       )}
-    </form>
+    </div>
   );
 }
