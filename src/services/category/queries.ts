@@ -52,6 +52,57 @@ export async function getFeaturedCategories() {
 
 }
 
+export async function getCategories() {
+    await connectDB();
+
+    const categories = await Category.aggregate([
+        {
+            $match: {
+                isActive: true
+            }
+        },
+        {
+            $lookup: {
+                from: "products",
+                localField: "_id",
+                foreignField: "category",
+                as: "products"
+            }
+        },
+        {
+            $addFields: {
+                productCount: {
+                    $size: {
+                        $filter: {
+                            input: "$products",
+                            as: "product",
+                            cond: {
+                                $and: [
+                                    { $eq: ["$$product.isDeleted", false] },
+                                    { $eq: ["$$product.status", PRODUCT_STATUS.PUBLISHED] }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $sort: {
+                sortOrder: 1,
+                name: 1
+            }
+        },
+        {
+            $project: {
+                products: 0,
+            }
+        }
+    ]);
+
+    return categories.map(toCategoryCard);
+}
+
 export async function getActiveCategories(): Promise<CategoryOption[]> {
     await connectDB();
 

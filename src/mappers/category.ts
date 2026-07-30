@@ -16,6 +16,7 @@ export function toCategoryCard(
         name: category.name,
         slug: category.slug,
         image: category.image,
+        description: category.description || undefined,
         productCount: category.productCount,
     };
 }
