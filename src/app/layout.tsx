@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/navbar";
+import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import ThemeProvider from "@/components/providers/theme-provider";
 
@@ -32,7 +32,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col">
         <ThemeProvider>
-          <Navbar />
+          <Header />
           <main className="flex-1">{children}</main>
           <Footer />
         </ThemeProvider>

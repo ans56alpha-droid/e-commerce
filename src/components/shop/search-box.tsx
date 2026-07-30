@@ -34,14 +34,14 @@ export default function SearchBox() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2">
-      <div className="relative">
+    <form onSubmit={handleSubmit} className="flex w-full items-center gap-2 md:w-auto">
+      <div className="relative w-full">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           name="search"
           defaultValue={currentSearch}
           placeholder="Search products..."
-          className="w-64 pl-9"
+          className="w-full pl-9 md:w-64"
           aria-label="Search products"
         />
       </div>

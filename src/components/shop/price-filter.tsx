@@ -82,10 +82,15 @@ export default function PriceFilter() {
     });
   }
 
+  const hasPrice = minValue !== "" || maxValue !== "";
+
   return (
-    <div className="relative flex items-center gap-2">
-      <form onSubmit={handleSubmit} className="flex items-center gap-2">
-        <div className="flex items-center gap-2">
+    <div className="relative w-full md:w-auto">
+      <form
+        onSubmit={handleSubmit}
+        className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-2"
+      >
+        <div className="flex w-full items-center gap-2 sm:w-auto">
           <Input
             type="number"
             name="minPrice"
@@ -96,7 +101,7 @@ export default function PriceFilter() {
             }}
             placeholder="Min"
             min="0"
-            className="w-24"
+            className="w-full sm:w-24"
             aria-label="Minimum price"
           />
           <span className="text-muted-foreground">-</span>
@@ -110,14 +115,19 @@ export default function PriceFilter() {
             }}
             placeholder="Max"
             min="0"
-            className="w-24"
+            className="w-full sm:w-24"
             aria-label="Maximum price"
           />
         </div>
-        <Button type="submit" variant="secondary" disabled={isPending}>
+        <Button type="submit" variant="secondary" disabled={isPending || !hasPrice}>
           Apply
         </Button>
-        <Button type="button" variant="ghost" onClick={handleClear} disabled={isPending}>
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handleClear}
+          disabled={isPending || !hasPrice}
+        >
           Clear
         </Button>
       </form>

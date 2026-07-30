@@ -9,7 +9,7 @@ export const navigation: NavigationItem[] = [
         href: "/",
     },{
         label: "Shop",
-        href: "/shop",
+        href: "/products",
     },
     {
         label: "Categories",

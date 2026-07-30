@@ -6,3 +6,4 @@ export { default as CategoryFilter } from "./category-filter";
 export { default as BrandFilter } from "./brand-filter";
 export { default as PriceFilter } from "./price-filter";
 export { default as Pagination } from "./pagination";
+export { default as ProductPagination } from "./product-pagination";
