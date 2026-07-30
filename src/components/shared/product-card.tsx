@@ -18,7 +18,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="overflow-hidden p-0">
-      <Link href={`/shop/${product.slug}`}>
+      <Link href={`/products/${product.slug}`}>
         <div className="relative aspect-square">
           <Image
             src={product.image}
