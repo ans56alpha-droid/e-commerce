@@ -1,6 +1,6 @@
 import type { Types } from "mongoose";
 import { CategoryType } from "@/models/Category";
-import type { Category, CategoryOption } from "@/types/category";
+import type { Category, CategoryOption, CategoryDetail } from "@/types/category";
 
 type CategoryWithCount = CategoryType & {
     _id: Types.ObjectId;
@@ -18,6 +18,17 @@ export function toCategoryCard(
         image: category.image,
         description: category.description || undefined,
         productCount: category.productCount,
+    };
+}
+
+export function toCategoryDetail(
+    category: CategoryType & { _id: Types.ObjectId }
+): CategoryDetail {
+    return {
+        id: category._id.toString(),
+        name: category.name,
+        slug: category.slug,
+        description: category.description || undefined,
     };
 }
 

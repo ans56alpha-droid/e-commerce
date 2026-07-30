@@ -1,7 +1,8 @@
+import type { Types } from "mongoose";
 import { connectDB } from "@/db";
-import Category from "@/models/Category";
+import Category, { CategoryType } from "@/models/Category";
 import { PRODUCT_STATUS } from "@/constants/product";
-import { toCategoryCard, toCategoryOption } from "@/mappers/category";
+import { toCategoryCard, toCategoryOption, toCategoryDetail } from "@/mappers/category";
 import type { CategoryOption } from "@/types/category";
 
 
@@ -101,6 +102,19 @@ export async function getCategories() {
     ]);
 
     return categories.map(toCategoryCard);
+}
+
+export async function getCategoryBySlug(slug: string) {
+    await connectDB();
+
+    const category = await Category.findOne({
+        slug,
+        isActive: true,
+    }).lean();
+
+    if (!category) return null;
+
+    return toCategoryDetail(category as CategoryType & { _id: Types.ObjectId });
 }
 
 export async function getActiveCategories(): Promise<CategoryOption[]> {

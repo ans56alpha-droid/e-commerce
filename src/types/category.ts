@@ -11,3 +11,10 @@ export interface CategoryOption {
     id: string;
     name: string;
 }
+
+export interface CategoryDetail {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string;
+}

@@ -1,7 +1,7 @@
 import Container from "@/components/ui/container";
+import { ProductList } from "@/components/shop";
 import { getProducts, getAvailableBrands } from "@/services/product";
 import { getActiveCategories } from "@/services/category";
-import { ProductToolbar, ProductGrid, ProductPagination } from "@/components/shop";
 import { parseProductFilters } from "@/lib/product-filters";
 
 export default async function ProductsPage({
@@ -16,6 +16,10 @@ export default async function ProductsPage({
     getAvailableBrands(),
   ]);
 
+  const emptyMessage = filters.search
+    ? `No products found for "${filters.search}".`
+    : "No products found.";
+
   return (
     <section className="py-16">
       <Container>
@@ -26,23 +30,14 @@ export default async function ProductsPage({
           </p>
         </div>
 
-        <ProductToolbar categories={categories} brands={brands} />
-
-        {products.length > 0 ? (
-          <ProductGrid products={products} />
-        ) : (
-          <div className="flex justify-center py-20">
-            <p className="text-lg text-muted-foreground">
-              {filters.search
-                ? `No products found for "${filters.search}".`
-                : "No products found."}
-            </p>
-          </div>
-        )}
-
-        {totalPages > 1 && (
-          <ProductPagination page={page} totalPages={totalPages} />
-        )}
+        <ProductList
+          products={products}
+          categories={categories}
+          brands={brands}
+          page={page}
+          totalPages={totalPages}
+          emptyMessage={emptyMessage}
+        />
       </Container>
     </section>
   );
