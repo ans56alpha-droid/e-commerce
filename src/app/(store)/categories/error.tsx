@@ -8,15 +8,13 @@ interface CategoriesErrorProps {
   reset: () => void;
 }
 
-export default function CategoriesError({ reset }: CategoriesErrorProps) {
+export default function CategoriesError({ error, reset }: CategoriesErrorProps) {
+  console.error(error);
+
   return (
     <section className="py-16">
       <Container>
-        <ErrorState
-          title="Failed to load categories"
-          message="Something went wrong while loading categories. Please try again."
-          onRetry={reset}
-        />
+        <ErrorState onRetry={reset} />
       </Container>
     </section>
   );

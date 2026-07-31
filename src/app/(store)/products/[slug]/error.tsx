@@ -3,12 +3,12 @@
 import Container from "@/components/ui/container";
 import ErrorState from "@/components/shared/error-state";
 
-interface ProductsErrorProps {
+interface ProductErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
-export default function ProductsError({ error, reset }: ProductsErrorProps) {
+export default function ProductError({ error, reset }: ProductErrorProps) {
   console.error(error);
 
   return (
