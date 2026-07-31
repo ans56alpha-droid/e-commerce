@@ -8,7 +8,7 @@ export const heroData: HeroData = {
 
   primaryButton: {
     label: "Shop Now",
-    href: "/shop",
+    href: "/products",
   },
 
   secondaryButton: {
