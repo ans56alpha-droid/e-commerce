@@ -1,13 +1,14 @@
 import Container from "@/components/ui/container";
-import EmptyState from "@/components/shared/empty-state";
+import NotFoundState from "@/components/shared/not-found-state";
 
 export default function CategoryNotFound() {
   return (
     <Container className="py-20">
-      <EmptyState
+      <NotFoundState
         title="Category Not Found"
         description="The category you are looking for does not exist or has been removed."
-        action={{ label: "Browse Categories", href: "/categories" }}
+        actionHref="/categories"
+        actionLabel="Browse Categories"
       />
     </Container>
   );
