@@ -3,3 +3,4 @@ export { default as ProductGridSkeleton } from "./product-grid-skeleton";
 export { default as CategoryCardSkeleton } from "./category-card-skeleton";
 export { default as CategoryGridSkeleton } from "./category-grid-skeleton";
 export { default as ProductDetailsSkeleton } from "./product-details-skeleton";
+export { default as ProductListSkeleton } from "./product-list-skeleton";

@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { useTransition } from "react";
 import Button from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
@@ -44,11 +45,17 @@ export default function ProductPagination({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   function goToPage(target: number) {
+    if (target < 1 || target > totalPages || target === page || isPending) return;
+
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(target));
-    router.push(`${pathname}?${params.toString()}`);
+
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   }
 
   const pages = buildPageNumbers(page, totalPages);
@@ -63,7 +70,7 @@ export default function ProductPagination({
           aria-label="Go to previous page"
           variant="outline"
           size="icon"
-          disabled={!hasPrev}
+          disabled={!hasPrev || isPending}
           onClick={() => goToPage(page - 1)}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -85,13 +92,18 @@ export default function ProductPagination({
               aria-current={p === page ? "page" : undefined}
               variant={p === page ? "primary" : "outline"}
               size="icon"
+              disabled={isPending}
               className={cn(
                 "text-sm",
                 p === page && "pointer-events-none",
               )}
               onClick={() => goToPage(p)}
             >
-              {p}
+              {isPending && p === page ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                p
+              )}
             </Button>
           ),
         )}
@@ -100,7 +112,7 @@ export default function ProductPagination({
           aria-label="Go to next page"
           variant="outline"
           size="icon"
-          disabled={!hasNext}
+          disabled={!hasNext || isPending}
           onClick={() => goToPage(page + 1)}
         >
           <ChevronRight className="h-4 w-4" />
@@ -113,14 +125,15 @@ export default function ProductPagination({
           aria-label="Go to previous page"
           variant="outline"
           size="sm"
-          disabled={!hasPrev}
+          disabled={!hasPrev || isPending}
           onClick={() => goToPage(page - 1)}
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
           Previous
         </Button>
 
-        <span className="text-sm text-muted-foreground">
+        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
           Page {page} of {totalPages}
         </span>
 
@@ -128,7 +141,7 @@ export default function ProductPagination({
           aria-label="Go to next page"
           variant="outline"
           size="sm"
-          disabled={!hasNext}
+          disabled={!hasNext || isPending}
           onClick={() => goToPage(page + 1)}
         >
           Next
