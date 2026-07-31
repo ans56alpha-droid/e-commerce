@@ -26,11 +26,29 @@ export async function generateMetadata({
   const { slug } = await params;
   const category = await getCategoryBySlug(slug);
 
-  if (!category) return {};
+  if (!category) {
+    notFound();
+  }
+
+  const description =
+    category.description ?? `Browse products in ${category.name}`;
 
   return {
     title: category.name,
-    description: category.description ?? `Browse products in ${category.name}`,
+    description,
+    alternates: {
+      canonical: `/categories/${category.slug}`,
+    },
+    openGraph: {
+      title: category.name,
+      description,
+      type: "website",
+      url: `/categories/${category.slug}`,
+    },
+    twitter: {
+      title: category.name,
+      description,
+    },
   };
 }
 

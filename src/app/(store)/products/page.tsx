@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 
 import Container from "@/components/ui/container";
 import { ProductList } from "@/components/shop";
@@ -6,6 +7,11 @@ import { ProductListSkeleton } from "@/components/skeletons";
 import { getProducts, getAvailableBrands } from "@/services/product";
 import { getActiveCategories } from "@/services/category";
 import { parseProductFilters } from "@/lib/product-filters";
+
+export const metadata: Metadata = {
+  title: "Shop Products",
+  description: "Browse our complete product catalog.",
+};
 
 interface ProductsPageProps {
   searchParams: Promise<Record<string, string | undefined>>;

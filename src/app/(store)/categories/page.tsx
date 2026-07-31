@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
+
 import Container from "@/components/ui/container";
 import CategoryGrid from "@/components/category/category-grid";
 import { getCategories } from "@/services/category";
+
+export const metadata: Metadata = {
+  title: "Categories",
+  description: "Browse products by category.",
+};
 
 export default async function CategoriesPage() {
   const categories = await getCategories();

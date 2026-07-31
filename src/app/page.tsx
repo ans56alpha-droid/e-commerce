@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import FeaturedCategories from "@/components/sections/featured-categories";
 import FeaturedProducts from "@/components/sections/featured-products";
 import Features from "@/components/sections/features";
@@ -7,6 +9,11 @@ import Newsletter from "@/components/sections/newsletter";
 import PromoBanner from "@/components/sections/promo-banner";
 import { getFeaturedProducts, getNewArrivals } from "@/services/product";
 import { getFeaturedCategories } from "@/services/category";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Discover premium products at great prices.",
+};
 
 export default async function Home() {
   const { products: featuredProducts } = await getFeaturedProducts();

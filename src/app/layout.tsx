@@ -16,11 +16,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ),
   title: {
     default: "alphaShop",
     template: "%s | alphaShop",
   },
-  description: "modren e-commerce website built with Next.js",
+  description: "Discover premium products at great prices.",
+  applicationName: "alphaShop",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  manifest: "/manifest.webmanifest",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    siteName: "alphaShop",
+    title: "alphaShop",
+    description: "Discover premium products at great prices.",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

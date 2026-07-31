@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 import { getProductBySlug, getRelatedProducts } from "@/services/product";
 
@@ -9,6 +10,43 @@ interface ProductPageProps {
   params: Promise<{
     slug: string;
   }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+
+  if (!product) {
+    notFound();
+  }
+
+  const primaryImage =
+    product.images.find((image) => image.isPrimary) ?? product.images[0];
+  const description = product.shortDescription || product.description;
+
+  return {
+    title: product.name,
+    description,
+    alternates: {
+      canonical: `/products/${product.slug}`,
+    },
+    openGraph: {
+      title: product.name,
+      description,
+      type: "website",
+      url: `/products/${product.slug}`,
+      images: primaryImage
+        ? [{ url: primaryImage.url, alt: primaryImage.alt }]
+        : undefined,
+    },
+    twitter: {
+      title: product.name,
+      description,
+      images: primaryImage ? [primaryImage.url] : undefined,
+    },
+  };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
