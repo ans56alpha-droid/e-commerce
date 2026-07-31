@@ -4,7 +4,7 @@ export const promoBanner = {
       "Discover premium products with exclusive discounts for a limited time.",
     button: {
       label: "Shop Sale",
-      href: "/shop",
+      href: "/products",
     },
     image: "/banner/sale.jpg",
   };
