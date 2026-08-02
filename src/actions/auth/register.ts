@@ -23,6 +23,8 @@ export async function register(values: unknown): Promise<AuthActionState> {
 
     const existingUser = await findUserByEmail(parsed.data.email)
 
+    console.log("parsed.data +++++++", parsed.data);
+
     if (existingUser) {
       return {
         success: false,

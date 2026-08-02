@@ -27,7 +27,7 @@ export async function createUser (data: CreateUserInput) {
 
     return UserModel.create({
         name,
-        lowerCasedEmail,
+        email: lowerCasedEmail,
         password: hashedPassword,
     });
 }
