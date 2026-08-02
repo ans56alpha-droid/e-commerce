@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import Container from "@/components/ui/container";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ProductList } from "@/components/shop";
 import { ProductListSkeleton } from "@/components/skeletons";
 import { getProducts, getAvailableBrands } from "@/services/product";
@@ -64,28 +64,14 @@ export default async function CategoryPage({
   return (
     <section className="py-16">
       <Container>
-        <nav aria-label="Breadcrumb" className="mb-6">
-          <ol className="flex items-center gap-2 text-sm text-muted-foreground">
-            <li>
-              <Link href="/" className="transition-colors hover:text-foreground">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link
-                href="/categories"
-                className="transition-colors hover:text-foreground"
-              >
-                Categories
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="font-medium text-foreground" aria-current="page">
-              {category.name}
-            </li>
-          </ol>
-        </nav>
+        <Breadcrumb
+          className="mb-6"
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Categories", href: "/categories" },
+            { label: category.name },
+          ]}
+        />
 
         <div className="mb-10">
           <h1 className="text-3xl font-bold">{category.name}</h1>

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getProductBySlug, getRelatedProducts } from "@/services/product";
 
 import Container from "@/components/ui/container";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ProductGallery, ProductInfo, ProductSpecifications, RelatedProducts } from "@/components/product";
 
 interface ProductPageProps {
@@ -65,6 +66,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <Container className="py-10">
+      <Breadcrumb
+        className="mb-6"
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Products", href: "/products" },
+          {
+            label: product.category.name,
+            href: `/categories/${product.category.slug}`,
+          },
+          { label: product.name },
+        ]}
+      />
+
       <div className="grid gap-10 lg:grid-cols-2 mb-2">
         {/* Images */}
 
