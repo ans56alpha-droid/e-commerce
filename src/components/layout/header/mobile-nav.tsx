@@ -7,9 +7,15 @@ import Logo from "./logo";
 import NavLinks from "./nav-links";
 import MobileSearch from "./mobile-search";
 import ThemeToggle from "../theme-toggle";
+import LoginButton from "@/components/auth/login-button";
+import LogoutButton from "@/components/auth/logout-button";
 import { cn } from "@/lib/cn";
 
-export default function MobileNav() {
+interface MobileNavProps {
+  isLoggedIn: boolean;
+}
+
+export default function MobileNav({ isLoggedIn }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const close = useCallback(() => setIsOpen(false), []);
@@ -109,6 +115,7 @@ export default function MobileNav() {
             >
               <User size={22} />
             </Button>
+            {isLoggedIn ? <LogoutButton /> : <LoginButton />}
           </div>
           <ThemeToggle />
         </div>

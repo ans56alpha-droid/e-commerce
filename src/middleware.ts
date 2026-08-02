@@ -14,11 +14,8 @@ const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
-  console.log("req.nextUrl +++++++", req.nextUrl)       // console
 
   const session = req.auth;
-  console.log("req auth  +++++++", req.auth)               // console  req
-  console.log("session +++++++", session)               // console  req
 
   const isLoggedIn = !!session;
 

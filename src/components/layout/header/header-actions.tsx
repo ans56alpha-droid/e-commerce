@@ -1,7 +1,14 @@
 import { Heart, ShoppingCart, User } from "lucide-react";
 import Button from "@/components/ui/button";
+import LoginButton from "@/components/auth/login-button";
+import LogoutButton from "@/components/auth/logout-button";
 
-export default function HeaderActions({ className }: { className?: string }) {
+interface HeaderActionsProps {
+  isLoggedIn: boolean;
+  className?: string;
+}
+
+export default function HeaderActions({ isLoggedIn, className }: HeaderActionsProps) {
   return (
     <div className={className ?? "flex items-center gap-4"}>
       <Button
@@ -28,6 +35,7 @@ export default function HeaderActions({ className }: { className?: string }) {
       >
         <User size={22} />
       </Button>
+      {isLoggedIn ? <LogoutButton /> : <LoginButton />}
     </div>
   );
 }

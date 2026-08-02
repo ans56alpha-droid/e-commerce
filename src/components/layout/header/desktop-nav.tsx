@@ -5,7 +5,11 @@ import HeaderActions from "./header-actions";
 import GlobalSearch from "./global-search";
 import ThemeToggle from "../theme-toggle";
 
-export default function DesktopNav() {
+interface DesktopNavProps {
+  isLoggedIn: boolean;
+}
+
+export default function DesktopNav({ isLoggedIn }: DesktopNavProps) {
   return (
     <div className="hidden lg:flex">
       <Container className="flex h-16 items-center justify-between">
@@ -14,7 +18,7 @@ export default function DesktopNav() {
         <div className="flex items-center gap-2">
           <GlobalSearch />
           <ThemeToggle />
-          <HeaderActions />
+          <HeaderActions isLoggedIn={isLoggedIn} />
         </div>
       </Container>
     </div>

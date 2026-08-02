@@ -4,7 +4,6 @@ import { getFeaturedProducts } from "@/services/product";
 export async function GET() {
   try {
     const products = await getFeaturedProducts();
-    console.log("products", products);
 
     return NextResponse.json({
       success: true,
