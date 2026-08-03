@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 import { connectDB } from "@/db";
 
 import Review from "@/models/Review";
+import Product from "@/models/Product";
 
 export interface CreateReviewInput {
   user: string;
@@ -15,6 +16,33 @@ export interface CreateReviewInput {
 export type UpdateReviewInput = Partial<
   Omit<CreateReviewInput, "user" | "product">
 >;
+
+async function recalculateProductRating(productId: string) {
+  await connectDB();
+
+  const [result] = await Review.aggregate<{
+    averageRating: number;
+    reviewCount: number;
+  }>([
+    {
+      $match: {
+        product: new Types.ObjectId(productId),
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        averageRating: { $avg: "$rating" },
+        reviewCount: { $sum: 1 },
+      },
+    },
+  ]);
+
+  await Product.findByIdAndUpdate(productId, {
+    averageRating: result ? Math.round(result.averageRating * 10) / 10 : 0,
+    reviewCount: result ? result.reviewCount : 0,
+  });
+}
 
 export async function createReview(data: CreateReviewInput) {
   await connectDB();
@@ -38,6 +66,8 @@ export async function createReview(data: CreateReviewInput) {
 
   await review.save();
 
+  await recalculateProductRating(data.product);
+
   return review;
 }
 
@@ -47,14 +77,26 @@ export async function updateReview(
 ) {
   await connectDB();
 
-  return Review.findByIdAndUpdate(reviewId, data, {
+  const review = await Review.findByIdAndUpdate(reviewId, data, {
     new: true,
     runValidators: true,
   });
+
+  if (review) {
+    await recalculateProductRating(review.product.toString());
+  }
+
+  return review;
 }
 
 export async function deleteReview(reviewId: string) {
   await connectDB();
 
-  return Review.findByIdAndDelete(reviewId);
+  const review = await Review.findByIdAndDelete(reviewId);
+
+  if (review) {
+    await recalculateProductRating(review.product.toString());
+  }
+
+  return review;
 }
