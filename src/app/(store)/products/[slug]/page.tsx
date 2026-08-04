@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { getProductBySlug, getRelatedProducts } from "@/services/product";
+import { getProductReviews } from "@/services/review";
 
 import Container from "@/components/ui/container";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ProductGallery, ProductInfo, ProductSpecifications, RelatedProducts } from "@/components/product";
+import { ProductReviews, ReviewSkeleton } from "@/components/reviews";
 
 interface ProductPageProps {
   params: Promise<{
@@ -59,10 +62,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const relatedProducts = await getRelatedProducts({
-    productId: product.id,
-    categoryId: product.category.id,
-  });
+  const [relatedProducts, { reviews }] = await Promise.all([
+    getRelatedProducts({
+      productId: product.id,
+      categoryId: product.category.id,
+    }),
+    getProductReviews({ productId: product.id, page: 1, limit: 5 }),
+  ]);
 
   return (
     <Container className="py-10">
@@ -90,6 +96,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </div>
 
       <ProductSpecifications specifications={product.specifications} />
+
+      <Suspense fallback={<ReviewSkeleton />}>
+        <ProductReviews
+          rating={product.rating}
+          reviewCount={product.reviewCount}
+          reviews={reviews}
+        />
+      </Suspense>
+
       <RelatedProducts products={relatedProducts} />
     </Container>
   );

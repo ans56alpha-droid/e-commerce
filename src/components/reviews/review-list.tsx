@@ -19,7 +19,7 @@ export default function ReviewList({
   emptyDescription,
 }: ReviewListProps) {
   if (reviews.length === 0) {
-    return <ReviewEmpty title={emptyTitle} description={emptyDescription} />;
+    return <ReviewEmpty title={emptyTitle} description={emptyDescription} className="mb-8" />;
   }
 
   return (
