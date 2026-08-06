@@ -11,6 +11,7 @@ import ReviewList from "./review-list";
 import ReviewSummary from "./review-summary";
 
 interface ProductReviewsProps {
+  productId: string;
   rating: number;
   reviewCount: number;
   reviews: ProductReview[];
@@ -34,6 +35,7 @@ function SignInPrompt() {
 }
 
 export default async function ProductReviews({
+  productId,
   rating,
   reviewCount,
   reviews,
@@ -62,7 +64,7 @@ export default async function ProductReviews({
       <Card>
         <h3 className="mb-4 text-lg font-semibold">Write a Review</h3>
 
-        {isAuthenticated ? <ReviewForm /> : <SignInPrompt />}
+        {isAuthenticated ? <ReviewForm productId={productId} /> : <SignInPrompt />}
       </Card>
     </section>
   );

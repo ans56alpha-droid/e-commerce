@@ -1,62 +1,119 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
 
+import { createReviewAction } from "@/actions/review/create-review";
+import {
+  createReviewSchema,
+  type CreateReviewInput,
+} from "@/lib/validations/review";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import { cn } from "@/lib/cn";
 
 import RatingStars from "./rating-stars";
 
-export interface ReviewFormValues {
-  rating: number;
-  title: string;
-  comment: string;
-}
-
 interface ReviewFormProps {
+  productId: string;
   className?: string;
 }
 
 const inputStyles =
   "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary";
 
-export default function ReviewForm({ className }: ReviewFormProps) {
-  const [rating, setRating] = useState(0);
-  const [title, setTitle] = useState("");
-  const [comment, setComment] = useState("");
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof ReviewFormValues, string>>
-  >({});
+export default function ReviewForm({
+  productId,
+  className,
+}: ReviewFormProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    setError,
+    control,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<CreateReviewInput>({
+    resolver: zodResolver(createReviewSchema),
+    defaultValues: {
+      rating: 0,
+      title: "",
+      comment: "",
+    },
+  });
 
-    const nextErrors: Partial<Record<keyof ReviewFormValues, string>> = {};
+  const rating = useWatch({ control, name: "rating" });
 
-    if (rating < 1) {
-      nextErrors.rating = "Please select a rating.";
-    }
+  const submitting = isPending || isSubmitting;
 
-    if (!comment.trim()) {
-      nextErrors.comment = "Please write a review.";
-    }
+  const onSubmit = handleSubmit((values) => {
+    setServerError(null);
+    setSuccessMessage(null);
 
-    setErrors(nextErrors);
+    startTransition(async () => {
+      try {
+        const result = await createReviewAction(productId, values);
 
-    if (Object.keys(nextErrors).length > 0) {
-      return;
-    }
+        if (!result.success) {
+          if (result.errors) {
+            for (const [field, messages] of Object.entries(result.errors)) {
+              setError(field as keyof CreateReviewInput, {
+                type: "server",
+                message: messages?.[0] ?? "Invalid value.",
+              });
+            }
+          }
 
-    // Submission logic (React Hook Form + server action) will be wired here.
-  };
+          if (result.message) {
+            setServerError(result.message);
+          }
+          return;
+        }
+
+        reset();
+        setSuccessMessage(
+          result.message ?? "Your review has been published. Thank you!"
+        );
+        router.refresh();
+      } catch {
+        setServerError("Something went wrong. Please try again.");
+      }
+    });
+  });
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={onSubmit}
       noValidate
       className={cn("space-y-5", className)}
     >
+      {serverError && (
+        <div
+          role="alert"
+          className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+        >
+          {serverError}
+        </div>
+      )}
+
+      {successMessage && (
+        <p
+          role="status"
+          className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400"
+        >
+          {successMessage}
+        </p>
+      )}
+
       <fieldset
         aria-describedby={errors.rating ? "review-rating-error" : undefined}
       >
@@ -69,7 +126,9 @@ export default function ReviewForm({ className }: ReviewFormProps) {
           readOnly={false}
           name="rating"
           size={28}
-          onChange={setRating}
+          onChange={(value) =>
+            setValue("rating", value, { shouldValidate: true })
+          }
           label="Select your rating"
         />
 
@@ -79,7 +138,7 @@ export default function ReviewForm({ className }: ReviewFormProps) {
             role="alert"
             className="mt-1.5 text-sm text-destructive"
           >
-            {errors.rating}
+            {errors.rating.message}
           </p>
         )}
       </fieldset>
@@ -94,13 +153,24 @@ export default function ReviewForm({ className }: ReviewFormProps) {
 
         <Input
           id="review-title"
-          name="title"
           type="text"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          maxLength={100}
           placeholder="Summarize your experience"
+          maxLength={100}
+          disabled={submitting}
+          aria-invalid={errors.title ? true : undefined}
+          aria-describedby={errors.title ? "review-title-error" : undefined}
+          {...register("title")}
         />
+
+        {errors.title && (
+          <p
+            id="review-title-error"
+            role="alert"
+            className="mt-1.5 text-sm text-destructive"
+          >
+            {errors.title.message}
+          </p>
+        )}
       </div>
 
       <div>
@@ -113,20 +183,19 @@ export default function ReviewForm({ className }: ReviewFormProps) {
 
         <textarea
           id="review-comment"
-          name="comment"
-          value={comment}
-          onChange={(event) => setComment(event.target.value)}
           rows={5}
           required
           maxLength={500}
+          placeholder="Share your experience with this product"
+          disabled={submitting}
           aria-invalid={errors.comment ? true : undefined}
           aria-describedby={errors.comment ? "review-comment-error" : undefined}
-          placeholder="Share your experience with this product"
           className={cn(
             inputStyles,
             "min-h-28",
             errors.comment && "border-destructive focus:ring-destructive"
           )}
+          {...register("comment")}
         />
 
         {errors.comment && (
@@ -135,12 +204,21 @@ export default function ReviewForm({ className }: ReviewFormProps) {
             role="alert"
             className="mt-1.5 text-sm text-destructive"
           >
-            {errors.comment}
+            {errors.comment.message}
           </p>
         )}
       </div>
 
-      <Button type="submit">Submit Review</Button>
+      <Button type="submit" disabled={submitting}>
+        {submitting ? (
+          <>
+            <Spinner />
+            <span className="ml-2">Submitting...</span>
+          </>
+        ) : (
+          "Submit Review"
+        )}
+      </Button>
     </form>
   );
 }

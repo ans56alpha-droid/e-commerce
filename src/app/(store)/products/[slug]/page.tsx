@@ -99,6 +99,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <Suspense fallback={<ReviewSkeleton />}>
         <ProductReviews
+          productId={product.id}
           rating={product.rating}
           reviewCount={product.reviewCount}
           reviews={reviews}

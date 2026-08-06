@@ -6,4 +6,3 @@ export { default as ReviewForm } from "./review-form";
 export { default as ReviewList } from "./review-list";
 export { default as ReviewSkeleton } from "./review-skeleton";
 export { default as ReviewSummary } from "./review-summary";
-export type { ReviewFormValues } from "./review-form";
