@@ -126,3 +126,62 @@ export async function updateCartItem(
 
   return cart;
 }
+
+export async function removeFromCart(
+  userId: string,
+  productId: string
+) {
+  await connectDB();
+
+  if (!Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID");
+  }
+
+  if (!Types.ObjectId.isValid(productId)) {
+    throw new Error("Invalid product ID");
+  }
+
+  const cart = await Cart.findOne({
+    user: userId,
+  });
+
+  if (!cart) {
+    throw new Error("Cart not found");
+  }
+
+  const itemExists = cart.items.some(
+    (item) => item.product.toString() === productId
+  );
+
+  if (!itemExists) {
+    throw new Error("Cart item not found");
+  }
+
+  cart.items.pull({ product: new Types.ObjectId(productId) });
+
+  await cart.save();
+
+  return cart;
+}
+
+export async function clearCart(userId: string) {
+  await connectDB();
+
+  if (!Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID");
+  }
+
+  const cart = await Cart.findOne({
+    user: userId,
+  });
+
+  if (!cart) {
+    throw new Error("Cart not found");
+  }
+
+  cart.items.pull(...cart.items);
+
+  await cart.save();
+
+  return cart;
+}
