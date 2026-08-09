@@ -1,4 +1,5 @@
 import { Heart, ShoppingCart, User } from "lucide-react";
+import Link from "next/link";
 import Button from "@/components/ui/button";
 import LoginButton from "@/components/auth/login-button";
 import LogoutButton from "@/components/auth/logout-button";
@@ -20,12 +21,15 @@ export default function HeaderActions({ isLoggedIn, className }: HeaderActionsPr
         <Heart size={22} />
       </Button>
       <Button
+        asChild
         aria-label="Shopping cart"
         variant="ghost"
         size="icon"
         className="relative transition hover:scale-110"
       >
-        <ShoppingCart size={22} />
+        <Link href="/cart">
+          <ShoppingCart size={22} />
+        </Link>
       </Button>
       <Button
         aria-label="User account"

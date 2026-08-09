@@ -6,7 +6,8 @@ import type { AuthActionState } from "@/types/auth";
 import { AuthError } from "next-auth";
 
 export async function login(
-  values: unknown
+  values: unknown,
+  callbackUrl = "/"
 ): Promise<AuthActionState> {
   const parsed = loginSchema.safeParse(values);
 
@@ -23,7 +24,7 @@ export async function login(
     await signIn("credentials", {
       email,
       password,
-      redirect: false,
+      redirectTo: callbackUrl,
     });
 
     return {
