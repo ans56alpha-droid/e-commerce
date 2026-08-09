@@ -32,21 +32,31 @@ export default function AddToCartButton({ productId, stock }: AddToCartButtonPro
   const handleAddToCart = () => {
     startTransition(async () => {
       try {
-        await addToCart(productId, 1);
+        const result = await addToCart(productId, 1);
+
+        if (!result.success) {
+          setState("error");
+          return;
+        }
+
         setState("added");
+
+        resetTimerRef.current = setTimeout(() => {
+          setState("idle");
+        }, 2000);
       } catch {
         setState("error");
-      }
 
-      resetTimerRef.current = setTimeout(() => {
-        setState("idle");
-      }, 2000);
+        resetTimerRef.current = setTimeout(() => {
+          setState("idle");
+        }, 2000);
+      }
     });
   };
 
   if (stock <= 0) {
     return (
-      <Button type="button" className="w-full" disabled>
+      <Button type="button" disabled className="w-full">
         Out of Stock
       </Button>
     );

@@ -28,8 +28,10 @@ export default function CartItem({ item }: CartItemProps) {
     }
 
     startTransition(async () => {
-      await updateCartItem(item.productId, item.quantity - 1);
-      router.refresh();
+      const result = await updateCartItem(item.productId, item.quantity - 1);
+      if (result.success) {
+        router.refresh();
+      }
     });
   };
 
@@ -39,15 +41,19 @@ export default function CartItem({ item }: CartItemProps) {
     }
 
     startTransition(async () => {
-      await updateCartItem(item.productId, item.quantity + 1);
-      router.refresh();
+      const result = await updateCartItem(item.productId, item.quantity + 1);
+      if (result.success) {
+        router.refresh();
+      }
     });
   };
 
   const handleRemove = () => {
     startTransition(async () => {
-      await removeFromCart(item.productId);
-      router.refresh();
+      const result = await removeFromCart(item.productId);
+      if (result.success) {
+        router.refresh();
+      }
     });
   };
 
