@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
+import ClearCartButton from "./clear-cart-button";
 
 import type { Cart } from "@/mappers/cart";
 
@@ -12,7 +13,11 @@ interface CartSummaryProps {
 export default function CartSummary({ cart }: CartSummaryProps) {
   return (
     <Card className="p-6">
-      <h2 className="text-lg font-semibold">Order Summary</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Order Summary</h2>
+
+        <ClearCartButton />
+      </div>
 
       <div className="mt-6 space-y-4">
         <div className="flex items-center justify-between text-sm">
