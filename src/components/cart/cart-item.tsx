@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import Button from "@/components/ui/button";
@@ -19,6 +20,7 @@ interface CartItemProps {
 
 export default function CartItem({ item }: CartItemProps) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const decreaseQuantity = () => {
     if (item.quantity <= 1) {
@@ -27,6 +29,7 @@ export default function CartItem({ item }: CartItemProps) {
 
     startTransition(async () => {
       await updateCartItem(item.productId, item.quantity - 1);
+      router.refresh();
     });
   };
 
@@ -37,12 +40,14 @@ export default function CartItem({ item }: CartItemProps) {
 
     startTransition(async () => {
       await updateCartItem(item.productId, item.quantity + 1);
+      router.refresh();
     });
   };
 
   const handleRemove = () => {
     startTransition(async () => {
       await removeFromCart(item.productId);
+      router.refresh();
     });
   };
 

@@ -146,15 +146,7 @@ export async function removeFromCart(
   });
 
   if (!cart) {
-    throw new Error("Cart not found");
-  }
-
-  const itemExists = cart.items.some(
-    (item) => item.product.toString() === productId
-  );
-
-  if (!itemExists) {
-    throw new Error("Cart item not found");
+    return;
   }
 
   cart.items.pull({ product: new Types.ObjectId(productId) });

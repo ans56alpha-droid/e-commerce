@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import { auth } from "@/auth";
 import {
   addToCart as addToCartService,
@@ -21,7 +23,11 @@ async function getAuthenticatedUserId() {
 export async function addToCart(productId: string, quantity = 1) {
   const userId = await getAuthenticatedUserId();
 
-  return addToCartService(userId, productId, quantity);
+  await addToCartService(userId, productId, quantity);
+
+  revalidatePath("/cart");
+
+  return { success: true };
 }
 
 export async function updateCartItem(
@@ -30,17 +36,29 @@ export async function updateCartItem(
 ) {
   const userId = await getAuthenticatedUserId();
 
-  return updateCartItemService(userId, productId, quantity);
+  await updateCartItemService(userId, productId, quantity);
+
+  revalidatePath("/cart");
+
+  return { success: true };
 }
 
 export async function removeFromCart(productId: string) {
   const userId = await getAuthenticatedUserId();
 
-  return removeFromCartService(userId, productId);
+  await removeFromCartService(userId, productId);
+
+  revalidatePath("/cart");
+
+  return { success: true };
 }
 
 export async function clearCart() {
   const userId = await getAuthenticatedUserId();
 
-  return clearCartService(userId);
+  await clearCartService(userId);
+
+  revalidatePath("/cart");
+
+  return { success: true };
 }

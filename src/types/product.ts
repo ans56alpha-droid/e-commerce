@@ -18,7 +18,7 @@ export interface Product {
     featured: boolean;
     isNew: boolean;
   
-    inStock: boolean;
+    stock: number;
 }
 
 

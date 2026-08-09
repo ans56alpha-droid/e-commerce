@@ -5,6 +5,7 @@ import { Heart } from "lucide-react";
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
 import Badge from "@/components/ui/badge";
+import { AddToCartButton } from "@/components/cart";
 
 import Price from "./price";
 import Rating from "./rating";
@@ -53,7 +54,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <Price price={product.price} compareAtPrice={product.compareAtPrice} />
 
-        <Button className="w-full">Add to Cart</Button>
+        <AddToCartButton productId={product.id} stock={product.stock} />
       </div>
     </Card>
   );

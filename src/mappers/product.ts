@@ -37,7 +37,7 @@ export function toProductCard(
 
         isNew: false,
 
-        inStock: product.stock > 0,
+        stock: product.stock,
     };
 }
 

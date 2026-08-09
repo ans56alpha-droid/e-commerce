@@ -22,7 +22,13 @@ export default function PromoBanner() {
           </div>
 
           <div className="relative min-h-[320px]">
-            <Image src={promoBanner.image} alt={promoBanner.title} fill className="object-cover" />
+            <Image
+              src={promoBanner.image}
+              alt={promoBanner.title}
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover"
+            />
           </div>
         </div>
       </Container>
