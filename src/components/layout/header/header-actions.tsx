@@ -3,13 +3,15 @@ import Link from "next/link";
 import Button from "@/components/ui/button";
 import LoginButton from "@/components/auth/login-button";
 import LogoutButton from "@/components/auth/logout-button";
+import { CartBadge } from "@/components/cart";
 
 interface HeaderActionsProps {
   isLoggedIn: boolean;
+  cartCount: number;
   className?: string;
 }
 
-export default function HeaderActions({ isLoggedIn, className }: HeaderActionsProps) {
+export default function HeaderActions({ isLoggedIn, cartCount, className }: HeaderActionsProps) {
   return (
     <div className={className ?? "flex items-center gap-4"}>
       <Button
@@ -27,8 +29,9 @@ export default function HeaderActions({ isLoggedIn, className }: HeaderActionsPr
         size="icon"
         className="relative transition hover:scale-110"
       >
-        <Link href="/cart">
-          <ShoppingCart size={22} />
+        <Link href="/cart" className="relative" aria-label="Shopping cart">
+          <ShoppingCart className="h-5 w-5" />
+          <CartBadge count={cartCount} />
         </Link>
       </Button>
       <Button

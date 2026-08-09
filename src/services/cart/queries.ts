@@ -17,7 +17,7 @@ export async function getCart(userId: string): Promise<Cart | null> {
   })
     .populate(
       "items.product",
-      "name slug price compareAtPrice images stock averageRating reviewCount"
+      "name slug price compareAtPrice images stock rating reviewCount isNew"
     )
     .lean();
 
@@ -26,4 +26,27 @@ export async function getCart(userId: string): Promise<Cart | null> {
   }
 
   return toCart(cart as unknown as PopulatedCart);
+}
+
+export async function getCartItemCount(
+  userId: string
+): Promise<number> {
+  await connectDB();
+
+  if (!Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID");
+  }
+
+  const cart = await CartModel.findOne({
+    user: userId,
+  }).select("items");
+
+  if (!cart) {
+    return 0;
+  }
+
+  return cart.items.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 }

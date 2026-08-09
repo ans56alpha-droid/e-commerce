@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Heart, Menu, ShoppingCart, User, X } from "lucide-react";
+import Link from "next/link";
 import Button from "@/components/ui/button";
 import Logo from "./logo";
 import NavLinks from "./nav-links";
@@ -10,12 +11,14 @@ import ThemeToggle from "../theme-toggle";
 import LoginButton from "@/components/auth/login-button";
 import LogoutButton from "@/components/auth/logout-button";
 import { cn } from "@/lib/cn";
+import { CartBadge } from "@/components/cart";
 
 interface MobileNavProps {
   isLoggedIn: boolean;
+  cartCount: number;
 }
 
-export default function MobileNav({ isLoggedIn }: MobileNavProps) {
+export default function MobileNav({ isLoggedIn, cartCount }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const close = useCallback(() => setIsOpen(false), []);
@@ -45,12 +48,7 @@ export default function MobileNav({ isLoggedIn }: MobileNavProps) {
     <div className="relative lg:hidden">
       {/* Header row */}
       <div className="relative flex h-16 items-center justify-between px-4">
-        <Button
-          aria-label="Open menu"
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsOpen(true)}
-        >
+        <Button aria-label="Open menu" variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
           <Menu size={24} />
         </Button>
 
@@ -64,7 +62,10 @@ export default function MobileNav({ isLoggedIn }: MobileNavProps) {
             size="icon"
             className="transition hover:scale-110"
           >
-            <ShoppingCart size={22} />
+            <Link href="/cart" className="relative" aria-label="Shopping cart">
+              <ShoppingCart className="h-5 w-5" />
+              <CartBadge count={cartCount} />
+            </Link>
           </Button>
         </div>
       </div>

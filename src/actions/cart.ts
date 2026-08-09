@@ -26,6 +26,7 @@ export async function addToCart(productId: string, quantity = 1) {
   await addToCartService(userId, productId, quantity);
 
   revalidatePath("/cart");
+  revalidatePath("/products");
 
   return { success: true };
 }
@@ -39,6 +40,7 @@ export async function updateCartItem(
   await updateCartItemService(userId, productId, quantity);
 
   revalidatePath("/cart");
+  revalidatePath("/products");
 
   return { success: true };
 }
@@ -49,6 +51,7 @@ export async function removeFromCart(productId: string) {
   await removeFromCartService(userId, productId);
 
   revalidatePath("/cart");
+  revalidatePath("/products");
 
   return { success: true };
 }
@@ -59,6 +62,7 @@ export async function clearCart() {
   await clearCartService(userId);
 
   revalidatePath("/cart");
+  revalidatePath("/products");
 
   return { success: true };
 }
