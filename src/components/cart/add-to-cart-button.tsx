@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Check, Loader2, ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import Button from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -11,11 +12,18 @@ import { addToCart } from "@/actions/cart";
 interface AddToCartButtonProps {
   productId: string;
   stock: number;
+  isAuthenticated: boolean;
 }
 
 type ButtonState = "idle" | "added" | "error";
 
-export default function AddToCartButton({ productId, stock }: AddToCartButtonProps) {
+export default function AddToCartButton({
+  productId,
+  stock,
+  isAuthenticated,
+}: AddToCartButtonProps) {
+  const router = useRouter();
+
   const [isPending, startTransition] = useTransition();
   const [state, setState] = useState<ButtonState>("idle");
 
@@ -30,6 +38,12 @@ export default function AddToCartButton({ productId, stock }: AddToCartButtonPro
   }, []);
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      router.push(`/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
+
+      return;
+    }
+
     startTransition(async () => {
       try {
         const result = await addToCart(productId, 1);

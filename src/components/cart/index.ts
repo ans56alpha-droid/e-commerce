@@ -5,3 +5,4 @@ export { default as CartList } from "./cart-list";
 export { default as CartEmpty } from "./cart-empty";
 export { default as CartSummary } from "./cart-summary";
 export { default as ClearCartButton } from "./clear-cart-button";
+export { default as AddToCart } from "./add-to-cart";
