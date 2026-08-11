@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { WishlistButtonServer } from "../wishlist";
 
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";
@@ -40,7 +40,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             className="absolute right-3 top-3 rounded-full bg-background/80 backdrop-blur"
             aria-label="Add to wishlist"
           >
-            <Heart className="h-5 w-5" />
+            <WishlistButtonServer productId={product.id} />
           </Button>
         </div>
       </Link>
