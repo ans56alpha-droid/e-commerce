@@ -6,12 +6,15 @@ export interface WishlistProduct {
   id: string;
   name: string;
   slug: string;
+  description: string;
   price: number;
   compareAtPrice?: number;
   image: string;
   stock: number;
   rating: number;
   reviewCount: number;
+  category: string;
+  featured: boolean;
   isNew: boolean;
 }
 
@@ -26,6 +29,7 @@ export function mapWishlistProducts(
     id: product._id.toString(),
     name: product.name,
     slug: product.slug ?? "",
+    description: product.description,
     price: product.price,
     compareAtPrice: product.compareAtPrice ?? undefined,
     image:
@@ -35,6 +39,8 @@ export function mapWishlistProducts(
     stock: product.stock,
     rating: product.averageRating,
     reviewCount: product.reviewCount,
+    category: product.category.toString(),
+    featured: product.isFeatured,
     isNew: false,
   }));
 }

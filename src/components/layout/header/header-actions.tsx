@@ -20,7 +20,9 @@ export default function HeaderActions({ isLoggedIn, cartCount, className }: Head
         size="icon"
         className="transition hover:scale-110"
       >
-        <Heart size={22} />
+        <Link href="/wishlist" className="relative" aria-label="Wishlist">
+          <Heart size={22} />
+        </Link>
       </Button>
       <Button
         asChild
