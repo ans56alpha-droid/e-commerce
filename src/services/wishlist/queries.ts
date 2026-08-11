@@ -27,3 +27,26 @@ export async function getWishlistProductIds(
     productId.toString()
   );
 }
+
+export async function getWishlistProducts(userId: string) {
+  await connectDB();
+
+  if (!Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID");
+  }
+
+  const wishlist = await Wishlist.findOne({
+    user: userId,
+  })
+    .populate(
+      "products",
+      "name slug price compareAtPrice images stock averageRating reviewCount"
+    )
+    .lean();
+
+  if (!wishlist) {
+    return [];
+  }
+
+  return wishlist.products;
+}

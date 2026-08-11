@@ -1,7 +1,7 @@
 export {
-    mapWishlist,
+    mapWishlistProducts,
 } from "./wishlist";
 
 export type {
-    Wishlist,
+    WishlistProduct,
 } from "./wishlist";
