@@ -4,6 +4,7 @@ import Button from "@/components/ui/button";
 import LoginButton from "@/components/auth/login-button";
 import LogoutButton from "@/components/auth/logout-button";
 import { CartBadge } from "@/components/cart";
+import { WishlistCount } from "@/components/wishlist";
 
 interface HeaderActionsProps {
   isLoggedIn: boolean;
@@ -21,7 +22,9 @@ export default function HeaderActions({ isLoggedIn, cartCount, className }: Head
         className="transition hover:scale-110"
       >
         <Link href="/wishlist" className="relative" aria-label="Wishlist">
-          <Heart size={22} />
+          <Heart className="h-5 w-5" />
+
+          <WishlistCount />
         </Link>
       </Button>
       <Button

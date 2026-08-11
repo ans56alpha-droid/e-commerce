@@ -12,6 +12,7 @@ import LoginButton from "@/components/auth/login-button";
 import LogoutButton from "@/components/auth/logout-button";
 import { cn } from "@/lib/cn";
 import { CartBadge } from "@/components/cart";
+import { WishlistCount } from "@/components/wishlist";
 
 interface MobileNavProps {
   isLoggedIn: boolean;
@@ -106,7 +107,11 @@ export default function MobileNav({ isLoggedIn, cartCount }: MobileNavProps) {
               size="icon"
               className="transition hover:scale-110"
             >
-              <Heart size={22} />
+              <Link href="/wishlist" className="relative" aria-label="Wishlist">
+                <Heart className="h-5 w-5" />
+
+                <WishlistCount />
+              </Link>
             </Button>
             <Button
               aria-label="User account"
