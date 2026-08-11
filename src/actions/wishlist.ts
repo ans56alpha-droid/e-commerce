@@ -30,7 +30,7 @@ export async function addToWishlist(
 
     await addToWishlistService(userId, productId);
 
-    // revalidatePath("/products");
+    revalidatePath("/products");
     revalidatePath("/wishlist");
 
     return {

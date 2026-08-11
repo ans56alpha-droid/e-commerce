@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, type MouseEvent } from "react";
+import { useOptimistic, useTransition, type MouseEvent } from "react";
 import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -21,6 +21,8 @@ export default function WishlistButton({
   isAuthenticated,
 }: WishlistButtonProps) {
   const [isPending, startTransition] = useTransition();
+  const [optimisticWishlisted, setOptimisticWishlisted] = useOptimistic(isWishlisted);
+
   const router = useRouter();
 
   const handleToggle = (event: MouseEvent<HTMLButtonElement>) => {
@@ -33,10 +35,15 @@ export default function WishlistButton({
       return;
     }
 
+    const nextState = !optimisticWishlisted;
+
+    setOptimisticWishlisted(nextState);
+
     startTransition(async () => {
       const result = await toggleWishlist(productId);
 
       if (!result.success) {
+        router.refresh();
         return;
       }
 
@@ -50,16 +57,15 @@ export default function WishlistButton({
       size="icon"
       variant="ghost"
       className="absolute rounded-full bg-background/80 backdrop-blur"
-      aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-      aria-pressed={isWishlisted}
+      aria-label={optimisticWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+      aria-pressed={optimisticWishlisted}
       disabled={isPending}
       onClick={handleToggle}
     >
       <Heart
         className={cn(
           "h-5 w-5 transition-all",
-          isWishlisted && "fill-current text-red-500",
-          isPending && "animate-pulse",
+          optimisticWishlisted && "fill-current text-red-500",
         )}
       />
     </Button>
