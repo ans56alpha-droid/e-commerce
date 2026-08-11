@@ -40,7 +40,7 @@ export async function getWishlistProducts(userId: string) {
   })
     .populate(
       "products",
-      "name slug price compareAtPrice images stock averageRating reviewCount"
+      "name slug description price compareAtPrice images stock averageRating reviewCount category isFeatured"
     )
     .lean();
 

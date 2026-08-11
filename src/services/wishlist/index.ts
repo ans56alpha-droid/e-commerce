@@ -1,5 +1,6 @@
 export {
     getWishlistProductIds,
+    getWishlistProducts,
 } from "./queries";
 
 export {
