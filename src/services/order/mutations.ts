@@ -11,6 +11,13 @@ import type { ShippingAddressType } from "@/models/Order";
 const FREE_SHIPPING_THRESHOLD = 100;
 const SHIPPING_FEE = 10;
 
+function generateOrderNumber() {
+  const timestamp = Date.now().toString().slice(-8);
+  const random = Math.floor(1000 + Math.random() * 9000);
+
+  return `ORD-${timestamp}-${random}`;
+}
+
 export async function createOrder(
   userId: string,
   shippingAddress: ShippingAddressType
@@ -98,7 +105,10 @@ export async function createOrder(
 
   const total = subtotal + shipping;
 
+  const orderNumber = generateOrderNumber();
+
   const order = await Order.create({
+    orderNumber,
     user: new Types.ObjectId(userId),
     items: orderItems,
     shippingAddress,
