@@ -18,7 +18,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <Card className="overflow-hidden p-0">
+    <Card className="flex flex-col overflow-hidden p-0">
       <Link href={`/products/${product.slug}`}>
         <div className="relative aspect-square">
           <Image
@@ -45,7 +45,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </Link>
 
-      <div className="space-y-3 p-5">
+      <div className="flex flex-1 flex-col gap-3 p-5">
         <Link href={`/shop/${product.slug}`}>
           <h3 className="line-clamp-2 font-semibold hover:text-primary">{product.name}</h3>
         </Link>
@@ -54,7 +54,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <Price price={product.price} compareAtPrice={product.compareAtPrice} />
 
-        <AddToCart productId={product.id} stock={product.stock} />
+        <div className="mt-auto">
+          <AddToCart productId={product.id} stock={product.stock} />
+        </div>
       </div>
     </Card>
   );

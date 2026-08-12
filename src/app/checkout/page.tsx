@@ -18,10 +18,7 @@ export default async function CheckoutPage() {
     redirect("/cart");
   }
 
-  const subtotal = cart.items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
+  const subtotal = cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
 
   const shipping = subtotal >= 100 ? 0 : 10;
 
