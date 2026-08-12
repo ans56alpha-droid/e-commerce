@@ -12,14 +12,15 @@ import LoginButton from "@/components/auth/login-button";
 import LogoutButton from "@/components/auth/logout-button";
 import { cn } from "@/lib/cn";
 import { CartBadge } from "@/components/cart";
-import { WishlistCount } from "@/components/wishlist";
+import { WishlistBadge } from "@/components/wishlist";
 
 interface MobileNavProps {
   isLoggedIn: boolean;
   cartCount: number;
+  wishlistCount: number;
 }
 
-export default function MobileNav({ isLoggedIn, cartCount }: MobileNavProps) {
+export default function MobileNav({ isLoggedIn, cartCount, wishlistCount }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const close = useCallback(() => setIsOpen(false), []);
@@ -110,7 +111,7 @@ export default function MobileNav({ isLoggedIn, cartCount }: MobileNavProps) {
               <Link href="/wishlist" className="relative" aria-label="Wishlist">
                 <Heart className="h-5 w-5" />
 
-                <WishlistCount />
+                <WishlistBadge count={wishlistCount} />
               </Link>
             </Button>
             <Button

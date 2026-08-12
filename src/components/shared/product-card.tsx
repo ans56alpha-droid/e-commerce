@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { WishlistButtonServer } from "../wishlist";
+import WishlistButtonServer from "../wishlist/wishlist-button-server";
 
 import Button from "@/components/ui/button";
 import Card from "@/components/ui/card";

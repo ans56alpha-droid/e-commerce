@@ -6,7 +6,8 @@ import { getWishlistProducts } from "@/services/wishlist";
 
 import { mapWishlistProducts } from "@/mappers/wishlist";
 
-import { WishlistEmpty, WishlistGrid } from "@/components/wishlist";
+import WishlistEmpty from "@/components/wishlist/wishlist-empty";
+import WishlistGrid from "@/components/wishlist/wishlist-grid";
 
 export default async function WishlistPage() {
   const session = await auth();

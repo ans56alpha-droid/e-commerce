@@ -8,9 +8,10 @@ import ThemeToggle from "../theme-toggle";
 interface DesktopNavProps {
   isLoggedIn: boolean;
   cartCount: number;
+  wishlistCount: number;
 }
 
-export default function DesktopNav({ isLoggedIn, cartCount }: DesktopNavProps) {
+export default function DesktopNav({ isLoggedIn, cartCount, wishlistCount }: DesktopNavProps) {
   return (
     <div className="hidden lg:flex">
       <Container className="flex h-16 items-center justify-between">
@@ -19,7 +20,11 @@ export default function DesktopNav({ isLoggedIn, cartCount }: DesktopNavProps) {
         <div className="flex items-center gap-2">
           <GlobalSearch />
           <ThemeToggle />
-          <HeaderActions isLoggedIn={isLoggedIn} cartCount={cartCount} />
+          <HeaderActions
+            isLoggedIn={isLoggedIn}
+            cartCount={cartCount}
+            wishlistCount={wishlistCount}
+          />
         </div>
       </Container>
     </div>

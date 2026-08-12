@@ -4,15 +4,16 @@ import Button from "@/components/ui/button";
 import LoginButton from "@/components/auth/login-button";
 import LogoutButton from "@/components/auth/logout-button";
 import { CartBadge } from "@/components/cart";
-import { WishlistCount } from "@/components/wishlist";
+import { WishlistBadge } from "@/components/wishlist";
 
 interface HeaderActionsProps {
   isLoggedIn: boolean;
   cartCount: number;
+  wishlistCount: number;
   className?: string;
 }
 
-export default function HeaderActions({ isLoggedIn, cartCount, className }: HeaderActionsProps) {
+export default function HeaderActions({ isLoggedIn, cartCount, wishlistCount, className }: HeaderActionsProps) {
   return (
     <div className={className ?? "flex items-center gap-4"}>
       <Button
@@ -24,7 +25,7 @@ export default function HeaderActions({ isLoggedIn, cartCount, className }: Head
         <Link href="/wishlist" className="relative" aria-label="Wishlist">
           <Heart className="h-5 w-5" />
 
-          <WishlistCount />
+          <WishlistBadge count={wishlistCount} />
         </Link>
       </Button>
       <Button
