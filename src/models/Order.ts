@@ -184,6 +184,44 @@ const ShippingAddressSchema = new Schema(
             default: "pending",
             index: true,
         },
+        paymentMethod: {
+          type: String,
+          enum: ["jazzcash"],
+          default: "jazzcash",
+        },
+        
+        jazzCash: {
+          txnRefNo: {
+            type: String,
+            unique: true,
+            sparse: true,
+            index: true,
+          },
+        
+          responseCode: {
+            type: String,
+            default: "",
+          },
+        
+          responseMessage: {
+            type: String,
+            default: "",
+          },
+        
+          retrievalReferenceNo: {
+            type: String,
+            default: "",
+          },
+        
+          authCode: {
+            type: String,
+            default: "",
+          },
+        
+          paidAt: {
+            type: Date,
+          },
+        },
     },
     {
       timestamps: true,
