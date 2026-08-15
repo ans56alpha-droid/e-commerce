@@ -50,7 +50,7 @@ export default function CheckoutForm() {
     }
 
     if (result.orderId) {
-      router.push(`/orders/${result.orderId}`);
+      router.push(`/checkout/payment/${result.orderId}`);
     }
   }
 
