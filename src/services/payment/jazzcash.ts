@@ -40,13 +40,19 @@ export async function initiateJazzCashPayment(
     throw new Error("Cancelled orders cannot be paid");
   }
 
-  if (order.jazzCash?.txnRefNo) {
+  const existingTxnRefNo = order.jazzCash?.txnRefNo;
+  const needsNewTransaction =
+    !existingTxnRefNo ||
+    order.paymentStatus === "failed" ||
+    (order.paymentStatus === "pending" && !order.jazzCash?.paidAt);
+
+  if (!needsNewTransaction && existingTxnRefNo) {
     return {
       orderId: order._id.toString(),
       orderNumber: order.orderNumber,
       paymentUrl: undefined,
       payload: undefined,
-      txnRefNo: order.jazzCash.txnRefNo,
+      txnRefNo: existingTxnRefNo,
     };
   }
 
