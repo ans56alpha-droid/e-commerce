@@ -16,7 +16,12 @@ export async function POST(request: Request) {
       }
     }
 
-    console.log("JazzCash callback:", payload);
+    if (process.env.NODE_ENV === "development") {
+      console.debug("JazzCash callback:", {
+        pp_TxnRefNo: payload.pp_TxnRefNo,
+        pp_ResponseCode: payload.pp_ResponseCode,
+      });
+    }
 
     // 1. Verify the cryptographic signature
     const isValidHash =
