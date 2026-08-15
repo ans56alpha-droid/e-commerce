@@ -31,6 +31,9 @@ export default async function OrderPage({
   const isPaymentSuccess = payment === "success";
   const isPaymentFailed = payment === "failed";
   const isPaid = order.paymentStatus === "paid";
+  const canRetryPayment =
+    (order.paymentStatus === "pending" || order.paymentStatus === "failed") &&
+    order.orderStatus !== "cancelled";
 
   return (
     <main className="container mx-auto px-4 py-12">
@@ -241,7 +244,7 @@ export default async function OrderPage({
               </div>
             </div>
 
-            {order.paymentStatus === "pending" && (
+            {canRetryPayment && (
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <button
                   onClick={() =>
@@ -249,7 +252,7 @@ export default async function OrderPage({
                   }
                   className="rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground"
                 >
-                  Pay Now
+                  Retry Payment
                 </button>
                 <Link
                   href="/orders"
@@ -257,10 +260,16 @@ export default async function OrderPage({
                 >
                   Back to Orders
                 </Link>
+                <Link
+                  href="/products"
+                  className="rounded-md border px-5 py-3 text-sm font-medium"
+                >
+                  Continue Shopping
+                </Link>
               </div>
             )}
 
-            {order.paymentStatus !== "paid" && (
+            {isPaid && (
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Link
                   href="/orders"
