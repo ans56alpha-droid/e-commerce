@@ -222,6 +222,16 @@ const ShippingAddressSchema = new Schema(
             type: Date,
           },
         },
+
+        stockDeducted: {
+          type: Boolean,
+          default: false,
+        },
+
+        fulfillmentError: {
+          type: String,
+          default: "",
+        },
     },
     {
       timestamps: true,

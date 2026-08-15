@@ -4,6 +4,19 @@ import { connectDB } from "@/db";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 
+class FulfillmentError extends Error {}
+
+type OrderDoc = Awaited<ReturnType<typeof Order.findOne>>;
+
+/**
+ * Confirms a verified JazzCash payment and fulfils the order.
+ *
+ * Phase 1 (payment confirmation) and Phase 2 (stock deduction) are separate
+ * transactions. A successful gateway payment is ALWAYS preserved, even if
+ * fulfillment hits a stock problem. If fulfillment cannot complete, the order
+ * is left paid with `stockDeducted: false` so a later retry (duplicate
+ * callback) can finish fulfilment without double-deducting stock.
+ */
 export async function completeJazzCashPayment(
   orderId: string,
   txnRefNo: string
@@ -14,35 +27,79 @@ export async function completeJazzCashPayment(
     throw new Error("Invalid order ID");
   }
 
-  const session = await mongoose.startSession();
+  let order: OrderDoc | undefined;
+
+  // Phase 1: confirm the payment. Never rolls back due to stock problems.
+  const confirmSession = await mongoose.startSession();
 
   try {
-    let completedOrder;
-
-    await session.withTransaction(async () => {
-      const order = await Order.findOne({
+    await confirmSession.withTransaction(async () => {
+      order = await Order.findOne({
         _id: orderId,
         "jazzCash.txnRefNo": txnRefNo,
-      }).session(session);
+      }).session(confirmSession);
 
       if (!order) {
         throw new Error("Order not found");
       }
 
-      // Idempotency
-      if (order.paymentStatus === "paid") {
-        completedOrder = order;
+      if (order.paymentStatus === "refunded") {
+        throw new Error("Refunded order cannot be completed");
+      }
+
+      if (order.orderStatus === "cancelled") {
+        throw new Error("Cancelled order cannot be completed");
+      }
+
+      if (order.paymentStatus !== "paid") {
+        order.paymentStatus = "paid";
+        order.orderStatus = "processing";
+
+        order.jazzCash = {
+          responseCode: order.jazzCash?.responseCode ?? "",
+          responseMessage: order.jazzCash?.responseMessage ?? "",
+          retrievalReferenceNo: order.jazzCash?.retrievalReferenceNo ?? "",
+          authCode: order.jazzCash?.authCode ?? "",
+          txnRefNo: order.jazzCash?.txnRefNo,
+          paidAt: new Date(),
+        };
+
+        await order.save({ session: confirmSession });
+      }
+    });
+  } finally {
+    await confirmSession.endSession();
+  }
+
+  if (order?.stockDeducted) {
+    return {
+      order,
+      fulfillmentOk: true,
+      fulfillmentError: undefined,
+    };
+  }
+
+  // Phase 2: deduct stock for every item atomically. Failure must never undo
+  // the confirmed payment (Phase 1).
+  const fulfillSession = await mongoose.startSession();
+
+  try {
+    await fulfillSession.withTransaction(async () => {
+      const latest = await Order.findOne({
+        _id: orderId,
+        "jazzCash.txnRefNo": txnRefNo,
+      }).session(fulfillSession);
+
+      if (!latest) {
+        throw new Error("Order not found");
+      }
+
+      if (latest.stockDeducted) {
+        order = latest;
         return;
       }
 
-      if (order.paymentStatus === "refunded") {
-        throw new Error(
-          "Refunded order cannot be completed"
-        );
-      }
-
-      // Deduct stock atomically for every item.
-      for (const item of order.items) {
+      for (const item of latest.items) {
         const result = await Product.updateOne(
           {
             _id: item.product,
@@ -57,36 +114,54 @@ export async function completeJazzCashPayment(
             },
           },
           {
-            session,
+            session: fulfillSession,
           }
         );
 
         if (result.modifiedCount !== 1) {
-          throw new Error(
+          throw new FulfillmentError(
             `Insufficient stock for product ${item.product}`
           );
         }
       }
 
-      order.paymentStatus = "paid";
-      order.orderStatus = "processing";
+      latest.stockDeducted = true;
+      latest.fulfillmentError = "";
 
-    order.jazzCash = {
-        responseCode: order.jazzCash?.responseCode ?? "",
-        responseMessage: order.jazzCash?.responseMessage ?? "",
-        retrievalReferenceNo: order.jazzCash?.retrievalReferenceNo ?? "",
-        authCode: order.jazzCash?.authCode ?? "",
-        txnRefNo: order.jazzCash?.txnRefNo,
-        paidAt: new Date(),
-    };
+      await latest.save({ session: fulfillSession });
 
-      await order.save({ session });
-
-      completedOrder = order;
+      order = latest;
     });
 
-    return completedOrder;
+    return {
+      order,
+      fulfillmentOk: true,
+      fulfillmentError: undefined,
+    };
+  } catch (error) {
+    if (error instanceof FulfillmentError) {
+      await Order.updateOne(
+        { _id: orderId },
+        { $set: { fulfillmentError: error.message } }
+      );
+
+      console.error(
+        "JazzCash payment confirmed; fulfillment pending:",
+        {
+          orderId,
+          message: error.message,
+        }
+      );
+
+      return {
+        order,
+        fulfillmentOk: false,
+        fulfillmentError: error.message,
+      };
+    }
+
+    throw error;
   } finally {
-    await session.endSession();
+    await fulfillSession.endSession();
   }
 }
