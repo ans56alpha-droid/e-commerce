@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/db";
 import Order from "@/models/Order";
 import { verifyJazzCashSecureHash } from "@/lib/jazzcash/hash";
+import { completeJazzCashPayment } from "@/services/payment/complete-payment";
 
 export async function POST(request: Request) {
   try {
@@ -147,13 +148,10 @@ export async function POST(request: Request) {
     }
 
     // 7. Payment is verified
-    order.paymentStatus = "paid";
-
-    order.orderStatus = "processing";
-
-    order.jazzCash.paidAt = new Date();
-
-    await order.save();
+    await completeJazzCashPayment(
+        order._id.toString(),
+        txnRefNo
+      );
 
     return NextResponse.redirect(
       new URL(
