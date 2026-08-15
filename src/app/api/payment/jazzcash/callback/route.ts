@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/db";
 import Order from "@/models/Order";
 import { verifyJazzCashSecureHash } from "@/lib/jazzcash/hash";
+import { jazzCashResponseSchema } from "@/lib/validations/payment";
 import { completeJazzCashPayment } from "@/services/payment/complete-payment";
 
 export async function POST(request: NextRequest) {
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 1. Verify the cryptographic signature
+    // 1. Verify the cryptographic signature (integrity of every pp_ field).
     if (!verifyJazzCashSecureHash(payload)) {
       console.error(
         "JazzCash callback rejected: invalid secure hash"
@@ -38,23 +39,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const txnRefNo = payload.pp_TxnRefNo;
-    const responseCode = payload.pp_ResponseCode;
-    const responseMessage =
-      payload.pp_ResponseMessage ?? "";
+    // 2. Validate the response fields we consume.
+    const parsed = jazzCashResponseSchema.safeParse(payload);
 
-    if (!txnRefNo) {
+    if (!parsed.success) {
+      console.error(
+        "JazzCash callback rejected: invalid response payload"
+      );
+
       return new NextResponse(
-        "Transaction reference is missing",
+        "Invalid response payload",
         {
           status: 400,
         }
       );
     }
 
+    const {
+      pp_TxnRefNo: txnRefNo,
+      pp_ResponseCode: responseCode,
+      pp_ResponseMessage: responseMessage,
+      pp_Amount: rawAmount,
+    } = parsed.data;
+
     await connectDB();
 
-    // 2. Find the order using our stored transaction reference
+    // 3. Find the order using our stored transaction reference
     const order = await Order.findOne({
       "jazzCash.txnRefNo": txnRefNo,
     });
@@ -94,6 +104,11 @@ export async function POST(request: NextRequest) {
 
     const orderId = order._id.toString();
 
+    const retrievalReferenceNo =
+      parsed.data.pp_RetrievalReferenceNo;
+
+    const authCode = parsed.data.pp_AuthCode;
+
     // 3. Persist the gateway response fields for audit.
     order.jazzCash = {
       ...(order.jazzCash ?? {}),
@@ -103,11 +118,9 @@ export async function POST(request: NextRequest) {
 
       responseMessage,
 
-      retrievalReferenceNo:
-        payload.pp_RetrievalReferenceNo ?? "",
+      retrievalReferenceNo,
 
-      authCode:
-        payload.pp_AuthCode ?? "",
+      authCode,
     };
 
     await order.save();
@@ -138,7 +151,7 @@ export async function POST(request: NextRequest) {
 
     // 5. Verify the amount.
     const returnedAmount = Number(
-      payload.pp_Amount
+      rawAmount
     );
 
     const expectedAmount = Math.round(

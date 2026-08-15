@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { initiateJazzCashPayment } from "@/services/payment/jazzcash";
+import { initiatePaymentSchema } from "@/lib/validations/payment";
 
 export async function initiateJazzCashPaymentAction(
   orderId: string
@@ -15,10 +16,19 @@ export async function initiateJazzCashPaymentAction(
     };
   }
 
+  const parsed = initiatePaymentSchema.safeParse({ orderId });
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Invalid order ID.",
+    };
+  }
+
   try {
     const payment = await initiateJazzCashPayment(
       session.user.id,
-      orderId
+      parsed.data.orderId
     );
 
     return {
