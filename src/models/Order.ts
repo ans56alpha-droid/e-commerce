@@ -232,6 +232,38 @@ const ShippingAddressSchema = new Schema(
           type: String,
           default: "",
         },
+
+        cancelledAt: {
+          type: Date,
+        },
+
+        statusHistory: {
+          type: [
+            new Schema(
+              {
+                status: {
+                  type: String,
+                  required: true,
+                },
+                note: {
+                  type: String,
+                  default: "",
+                  maxlength: 500,
+                },
+                changedBy: {
+                  type: Schema.Types.ObjectId,
+                  ref: "User",
+                },
+                createdAt: {
+                  type: Date,
+                  default: Date.now,
+                },
+              },
+              { _id: false }
+            ),
+          ],
+          default: [],
+        },
     },
     {
       timestamps: true,

@@ -31,3 +31,34 @@ export async function createUser (data: CreateUserInput) {
         password: hashedPassword,
     });
 }
+
+export async function updateUserPassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+) {
+    await connectDB();
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const isValid = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isValid) {
+        throw new Error("Current password is incorrect");
+    }
+
+    if (newPassword.length < 8) {
+        throw new Error("New password must be at least 8 characters");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return { success: true };
+}

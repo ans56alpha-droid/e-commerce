@@ -1,9 +1,18 @@
 import { redirect, notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
 import { auth } from "@/auth";
 import { getUserOrder } from "@/services/order";
+import {
+  ORDER_STATUS_STYLES,
+  PAYMENT_METHOD_LABELS,
+  PAYMENT_STATUS_STYLES,
+} from "@/constants/order";
+import { cancelOrderAction } from "@/actions/order";
+import ConfirmAction from "@/components/ui/confirm-action";
+import ReturnRequestForm from "@/components/orders/return-request-form";
 
 type OrderPageProps = {
   params: Promise<{
@@ -14,70 +23,23 @@ type OrderPageProps = {
   }>;
 };
 
-const paymentStatusStyles: Record<
-  string,
-  { label: string; className: string }
-> = {
-  pending: {
-    label: "Payment Pending",
-    className: "bg-amber-50 text-amber-700",
-  },
-  paid: {
-    label: "Paid",
-    className: "bg-green-50 text-green-700",
-  },
-  failed: {
-    label: "Payment Failed",
-    className: "bg-red-50 text-red-700",
-  },
-  refunded: {
-    label: "Refunded",
-    className: "bg-slate-100 text-slate-600",
-  },
-};
-
-const orderStatusStyles: Record<
-  string,
-  { label: string; className: string }
-> = {
-  pending: {
-    label: "Pending",
-    className: "bg-amber-50 text-amber-700",
-  },
-  processing: {
-    label: "Processing",
-    className: "bg-blue-50 text-blue-700",
-  },
-  shipped: {
-    label: "Shipped",
-    className: "bg-blue-50 text-blue-700",
-  },
-  delivered: {
-    label: "Delivered",
-    className: "bg-green-50 text-green-700",
-  },
-  cancelled: {
-    label: "Cancelled",
-    className: "bg-red-50 text-red-700",
-  },
-};
-
-const paymentMethodLabels: Record<string, string> = {
-  jazzcash: "JazzCash",
+export const metadata: Metadata = {
+  title: "Order Details",
+  description: "View your order details and payment status.",
 };
 
 export default async function OrderPage({
   params,
   searchParams,
 }: OrderPageProps) {
+  const { orderId } = await params;
+  const { payment } = await searchParams;
+
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect(`/login?callbackUrl=/orders/${orderId}`);
   }
-
-  const { orderId } = await params;
-  const { payment } = await searchParams;
 
   let order;
 
@@ -103,18 +65,23 @@ export default async function OrderPage({
       order.paymentStatus === "failed") &&
     order.orderStatus !== "cancelled";
 
+  const canCancel = order.orderStatus === "pending";
+
+  const canReturn = order.orderStatus === "delivered" && order.paymentStatus === "paid";
+
   const paymentStatus =
-    paymentStatusStyles[order.paymentStatus] ??
-    paymentStatusStyles.pending;
+    PAYMENT_STATUS_STYLES[order.paymentStatus] ??
+    PAYMENT_STATUS_STYLES.pending;
 
   const orderStatus =
-    orderStatusStyles[order.orderStatus] ?? {
+    ORDER_STATUS_STYLES[order.orderStatus] ?? {
       label: order.orderStatus,
       className: "bg-muted text-muted-foreground",
     };
 
   const paymentMethod =
-    paymentMethodLabels[order.paymentMethod] ?? order.paymentMethod;
+    PAYMENT_METHOD_LABELS[order.paymentMethod] ??
+    order.paymentMethod;
 
   const placedAt = order.createdAt
     ? new Date(order.createdAt).toLocaleDateString(undefined, {
@@ -320,7 +287,29 @@ export default async function OrderPage({
               </div>
             )}
 
-            {!canPay && (
+            {canCancel && (
+              <div className="mt-6 border-t pt-6">
+                <ConfirmAction
+                  action={cancelOrderAction}
+                  fields={[
+                    {
+                      name: "orderId",
+                      value: order._id.toString(),
+                    },
+                  ]}
+                  confirmLabel="Cancel Order"
+                  confirmMessage="Are you sure you want to cancel this order? This action cannot be undone."
+                />
+              </div>
+            )}
+
+            {canReturn && (
+              <div className="mt-6 border-t pt-6">
+                <ReturnRequestForm orderId={order._id.toString()} />
+              </div>
+            )}
+
+            {!canPay && !canCancel && !canReturn && (
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Link
                   href="/orders"

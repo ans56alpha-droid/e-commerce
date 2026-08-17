@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 import { connectDB } from "@/db";
 
@@ -7,6 +7,9 @@ import Order from "@/models/Order";
 import Product from "@/models/Product";
 
 import type { ShippingAddressType } from "@/models/Order";
+
+import { ALLOWED_STATUS_TRANSITIONS } from "@/constants/order";
+import { createNotification } from "@/services/notification/mutations";
 
 const FREE_SHIPPING_THRESHOLD = 100;
 const SHIPPING_FEE = 10;
@@ -125,4 +128,223 @@ export async function createOrder(
   );
 
   return order;
+}
+
+/**
+ * Cancels a pending order. Stock is only restored if it was previously
+ * deducted (paid order where fulfillment completed). The operation runs
+ * inside a MongoDB transaction: validate → restore stock → mark cancelled.
+ */
+export async function cancelOrder(
+  userId: string,
+  orderId: string
+) {
+  await connectDB();
+
+  if (!Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID");
+  }
+
+  if (!Types.ObjectId.isValid(orderId)) {
+    throw new Error("Invalid order ID");
+  }
+
+  const session = await mongoose.startSession();
+
+  try {
+    let cancelled = false;
+
+    await session.withTransaction(async () => {
+      const order = await Order.findOne({
+        _id: new Types.ObjectId(orderId),
+        user: new Types.ObjectId(userId),
+      }).session(session);
+
+      if (!order) {
+        throw new Error("Order not found");
+      }
+
+      if (order.orderStatus === "cancelled") {
+        throw new Error(
+          "This order has already been cancelled"
+        );
+      }
+
+      if (order.orderStatus !== "pending") {
+        throw new Error(
+          "This order cannot be cancelled"
+        );
+      }
+
+      // Restore stock only if it was previously deducted.
+      if (order.stockDeducted) {
+        for (const item of order.items) {
+          await Product.updateOne(
+            { _id: item.product },
+            { $inc: { stock: item.quantity } },
+            { session }
+          );
+        }
+      }
+
+      order.orderStatus = "cancelled";
+      order.cancelledAt = new Date();
+
+      await order.save({ session });
+
+      cancelled = true;
+    });
+
+    if (!cancelled) {
+      throw new Error("Failed to cancel order");
+    }
+
+    const orderForNotification = await Order.findById(
+      new Types.ObjectId(orderId)
+    ).select("orderNumber user");
+
+    if (orderForNotification) {
+      await createNotification({
+        userId: orderForNotification.user.toString(),
+        type: "order_cancelled",
+        title: "Order Cancelled",
+        message: `Your order #${orderForNotification.orderNumber} has been cancelled.`,
+        orderId,
+      });
+    }
+  } finally {
+    await session.endSession();
+  }
+}
+
+/**
+ * Admin-only: updates order status with transition validation.
+ * Validates the transition is allowed, appends status history entry.
+ * When cancelling, restores stock if it was previously deducted.
+ */
+export async function updateOrderStatus(
+  orderId: string,
+  newStatus: string,
+  adminId: string,
+  note = ""
+) {
+  await connectDB();
+
+  if (!Types.ObjectId.isValid(orderId)) {
+    throw new Error("Invalid order ID");
+  }
+
+  if (!Types.ObjectId.isValid(adminId)) {
+    throw new Error("Invalid admin ID");
+  }
+
+  const allowed = ALLOWED_STATUS_TRANSITIONS[newStatus];
+  if (allowed === undefined) {
+    throw new Error("Invalid order status");
+  }
+
+  const session = await mongoose.startSession();
+
+  try {
+    let updated = false;
+
+    await session.withTransaction(async () => {
+      const order = await Order.findById(
+        new Types.ObjectId(orderId)
+      ).session(session);
+
+      if (!order) {
+        throw new Error("Order not found");
+      }
+
+      const currentStatus = order.orderStatus;
+
+      if (currentStatus === newStatus) {
+        throw new Error(
+          `Order is already ${newStatus}`
+        );
+      }
+
+      const permitted = ALLOWED_STATUS_TRANSITIONS[currentStatus];
+      if (!permitted || !permitted.includes(newStatus)) {
+        throw new Error(
+          `Cannot transition from "${currentStatus}" to "${newStatus}"`
+        );
+      }
+
+      order.orderStatus = newStatus as typeof order.orderStatus;
+
+      if (newStatus === "cancelled") {
+        order.cancelledAt = new Date();
+
+        if (order.stockDeducted) {
+          for (const item of order.items) {
+            await Product.updateOne(
+              { _id: item.product },
+              { $inc: { stock: item.quantity } },
+              { session }
+            );
+          }
+        }
+      }
+
+      order.statusHistory.push({
+        status: newStatus,
+        note,
+        changedBy: new Types.ObjectId(adminId),
+        createdAt: new Date(),
+      });
+
+      await order.save({ session });
+
+      updated = true;
+    });
+
+    if (!updated) {
+      throw new Error("Failed to update order status");
+    }
+
+    const orderForNotification = await Order.findById(
+      new Types.ObjectId(orderId)
+    ).select("orderNumber user");
+
+    if (orderForNotification) {
+      const notificationMap: Record<string, { type: "order_processing" | "order_shipped" | "order_delivered" | "order_cancelled"; title: string; message: string }> = {
+        processing: {
+          type: "order_processing",
+          title: "Order Processing",
+          message: `Your order #${orderForNotification.orderNumber} is now being processed.`,
+        },
+        shipped: {
+          type: "order_shipped",
+          title: "Order Shipped",
+          message: `Your order #${orderForNotification.orderNumber} has been shipped.`,
+        },
+        delivered: {
+          type: "order_delivered",
+          title: "Order Delivered",
+          message: `Your order #${orderForNotification.orderNumber} has been delivered.`,
+        },
+        cancelled: {
+          type: "order_cancelled",
+          title: "Order Cancelled",
+          message: `Your order #${orderForNotification.orderNumber} has been cancelled.`,
+        },
+      };
+
+      const notificationData = notificationMap[newStatus];
+
+      if (notificationData) {
+        await createNotification({
+          userId: orderForNotification.user.toString(),
+          type: notificationData.type,
+          title: notificationData.title,
+          message: notificationData.message,
+          orderId,
+        });
+      }
+    }
+  } finally {
+    await session.endSession();
+  }
 }
