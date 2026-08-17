@@ -13,6 +13,7 @@ export default function Hero() {
         alt={heroData.imageAlt}
         fill
         priority
+        sizes="100vw"
         className="object-cover group-hover:scale-105 transition-transform duration-300"
       />
 

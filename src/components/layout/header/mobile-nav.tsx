@@ -96,7 +96,7 @@ export default function MobileNav({ isLoggedIn, cartCount, wishlistCount }: Mobi
           </Button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-4 py-6">
+        <nav className="flex-1 overflow-y-auto px-4 py-6" aria-label="Mobile navigation">
           <NavLinks direction="vertical" onLinkClick={close} />
         </nav>
 

@@ -36,12 +36,13 @@ export async function getProducts(
     Product.find(query)
       .sort(sort)
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .lean(),
     Product.countDocuments(query),
   ]);
 
   return {
-    products: products.map(toProductCard),
+    products: products.map((p) => toProductCard(p as never)),
     total,
     page,
     limit,

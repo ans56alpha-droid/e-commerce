@@ -1,4 +1,5 @@
 import { PRODUCT_STATUS } from "@/constants/product";
+import { escapeRegex } from "@/lib/escape-regex";
 import { ProductFilters } from "./types";
 
 export function buildProductQuery({
@@ -16,28 +17,29 @@ export function buildProductQuery({
   };
 
   if (search) {
+    const safe = escapeRegex(search);
     query.$or = [
       {
         name: {
-          $regex: search,
+          $regex: safe,
           $options: "i",
         },
       },
       {
         shortDescription: {
-          $regex: search,
+          $regex: safe,
           $options: "i",
         },
       },
       {
         description: {
-          $regex: search,
+          $regex: safe,
           $options: "i",
         },
       },
       {
         brand: {
-          $regex: search,
+          $regex: safe,
           $options: "i",
         },
       },
@@ -50,7 +52,7 @@ export function buildProductQuery({
 
   if (brand) {
     query.brand = {
-      $regex: brand,
+      $regex: escapeRegex(brand),
       $options: "i",
     };
   }

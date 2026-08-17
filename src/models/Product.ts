@@ -83,7 +83,7 @@ const ProductSchema = new Schema(
       type: String,
       required: [true, "Name is required"],
       trim: true,
-      max: 200,
+      maxlength: 200,
     },
 
     slug: {
@@ -113,6 +113,7 @@ const ProductSchema = new Schema(
     price: {
       type: Number,
       required: true,
+      min: 0,
     },
 
     compareAtPrice: {

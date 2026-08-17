@@ -1,9 +1,15 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 import { auth } from "@/auth";
 import { getCart } from "@/services/cart";
 
 import { CartEmpty, CartList, CartSummary } from "@/components/cart";
+
+export const metadata: Metadata = {
+  title: "Shopping Cart | alphaShop",
+  description: "Review your items before checkout.",
+};
 
 export default async function CartPage() {
   const session = await auth();

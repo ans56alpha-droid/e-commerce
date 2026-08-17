@@ -16,10 +16,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const { products: featuredProducts } = await getFeaturedProducts();
-  const { products: newArrivalProducts } = await getNewArrivals();
-
-  const categories = await getFeaturedCategories();
+  const [{ products: featuredProducts }, { products: newArrivalProducts }, categories] =
+    await Promise.all([
+      getFeaturedProducts(),
+      getNewArrivals(),
+      getFeaturedCategories(),
+    ]);
 
   return (
     <>

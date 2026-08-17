@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 import { auth } from "@/auth";
 
@@ -8,6 +9,11 @@ import { mapWishlistProducts } from "@/mappers/wishlist";
 
 import WishlistEmpty from "@/components/wishlist/wishlist-empty";
 import WishlistGrid from "@/components/wishlist/wishlist-grid";
+
+export const metadata: Metadata = {
+  title: "My Wishlist | alphaShop",
+  description: "Products you've saved for later.",
+};
 
 export default async function WishlistPage() {
   const session = await auth();
